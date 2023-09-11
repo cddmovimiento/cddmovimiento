@@ -217,7 +217,7 @@ class HrPayslip(models.Model):
         """
         res = [(5,0,0)]
         tipo_de_hora_mapping = {'1':'HEX1', '2':'HEX2', '3':'HEX3'}
-        
+        horas_obj = self.env['horas.nomina']
         def is_number(s):
             try:
                 return float(s)
