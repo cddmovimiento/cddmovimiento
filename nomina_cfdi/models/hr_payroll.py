@@ -472,6 +472,8 @@ class HrPayslip(models.Model):
                             number_of_days = resource_days - leave_days
                          else:
                             number_of_days = 30 - leave_days
+                      else:
+                         number_of_days = resource_days
                   elif contract.tipo_pago == '03':
                       total_days = resource_days + leave_days
                       if total_days != 30.42:
