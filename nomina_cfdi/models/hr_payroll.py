@@ -411,7 +411,8 @@ class HrPayslip(models.Model):
                          })
                          res.append(attendances)
                    else:
-                      dias_periodo = date_to - date_from.days + 1
+                      delta = date_to - date_from
+                      dias_periodo = delta.days + 1
                       total_days = resource_days + leave_days
                       if total_days != dias_periodo:
                          if leave_days == 0  and not nvo_ingreso:
