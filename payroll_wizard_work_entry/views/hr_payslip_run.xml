@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="%(payroll_wizard_work_entry.work_entry_wizard_action)d"
-                        string="Work entry"
+                        string="Editar variables/dias"
                         type="action"
                         context="{'default_payslip_run_id': id}"
                 />

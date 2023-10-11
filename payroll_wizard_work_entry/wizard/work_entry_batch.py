@@ -87,18 +87,18 @@ class WorkEntryWizard(models.TransientModel):
             work_entry_object = self.env['hr.payslip.worked_days']
             input_entry_object = self.env['hr.payslip.input']
             if self.work_payslip_ids:
-                for r in self.work_payslip_ids:
+                for r in self.work_payslip_ids.filtered(lambda x:x.number_of_days > 0):
                     work_line = work_entry_object.create({
                         'code': r.work_entry_type_id.code,
                         'contract_id': r.payslip_id.contract_id.id,
-                        'name': r.work_entry_type_id.name,
+                        'name': r.work_entry_type_id.code,
                         'number_of_days': r.number_of_days,
                         'number_of_hours': r.number_of_hours,
                         'payslip_id': r.payslip_id.id,
                         'work_entry_type_id': r.work_entry_type_id.id
                     })
             if self.input_payslip_ids:
-                for r in self.input_payslip_ids:
+                for r in self.input_payslip_ids.filtered(lambda x:x.amount > 0):
                     input_line = input_entry_object.create({
                         'code': r.input_type_id.code,
                         'contract_id': r.payslip_id.contract_id.id,
