@@ -179,7 +179,7 @@
                     <button string="Recalcular nómina" name="recalcular_nomina_payslip_batch" type="object" states='draft' class="oe_highlight"/>
                 </button>
                 <xpath expr="//button[@name='action_draft']" position="replace">
-                    <button string="Regresar a borrador" name="action_draft" attrs="{'invisible':[('all_payslip_generated','=',True)]}"/>
+                    <button string="Regresar a borrador" name="action_draft" type="object" confirm="Esta seguro(a) de continuar?" attrs="{'invisible':[('all_payslip_generated','=',True)]}"/>
                 </xpath>
             </field>
        </record> 
