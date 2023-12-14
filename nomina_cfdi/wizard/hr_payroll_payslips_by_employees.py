@@ -94,20 +94,24 @@ class HrPayslipEmployeesExt(models.TransientModel):
         #    'number_of_days': 365,
         #    'number_of_hours': 121.68,
         #})
-
+        
         payslips_vals = []
         for contract in self._filter_contracts(contracts):
+            if contract.date_start > payslip_run.date_start:
+                date_start = contract.date_start
+            else:
+                date_start = payslip_run.date_start
             values = dict(default_values, **{
                 'name': _('New Payslip'),
                 'employee_id': contract.employee_id.id,
                 'credit_note': payslip_run.credit_note,
                 'payslip_run_id': payslip_run.id,
-                'date_from': payslip_run.date_start,
+                'date_from': date_start,
                 'date_to': payslip_run.date_end,
                 'contract_id': contract.id,
                 'struct_id': self.structure_id.id or contract.structure_type_id.default_struct_id.id,
                 #Add
-                'worked_days_line_ids': self.env['hr.payslip'].get_worked_day_lines(self._filter_contracts(contract),payslip_run.date_start,payslip_run.date_end),
+                'worked_days_line_ids': self.env['hr.payslip'].get_worked_day_lines(self._filter_contracts(contract),date_start,payslip_run.date_end),
                 'tipo_nomina' : payslip_run.tipo_nomina,
                 'fecha_pago' : payslip_run.fecha_pago,
                 'journal_id': payslip_run.journal_id.id,
