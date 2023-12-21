@@ -16,6 +16,7 @@
         "security/ir.model.access.csv",
         "views/project_task.xml",
         "views/sale_order.xml",
+        "views/hr_employee.xml",
     ],
     # only loaded in demonstration mode
     "demo": [

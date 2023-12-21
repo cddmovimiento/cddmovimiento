@@ -17,6 +17,12 @@ class ProjectTask(models.Model):
         required=True
     )
 
+    model_fleet_id = fields.Many2one(
+        comodel_name="fleet.vehicle.model",
+        string="Modelo de la grúa",
+        store=True,
+    )
+
     binnacle_ids = fields.One2many(
         "project.binnacle",
         "parent_id",
