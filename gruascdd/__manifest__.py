@@ -9,7 +9,7 @@
     "license": "OPL-1",
 
     # any module necessary for this one to work correctly
-    "depends": ["base","project","sale","sale_project","hr","hr_timesheet", "industry_fsm"],
+    "depends": ["base","project","sale","sale_project","hr","hr_timesheet", "industry_fsm","fleet"],
 
     # always loaded
     "data": [
@@ -17,6 +17,8 @@
         "views/project_task.xml",
         "views/sale_order.xml",
         "views/hr_employee.xml",
+        "views/fleet_vehicle.xml",
+        "views/fleet_vehicle_hourmeter.xml",
     ],
     # only loaded in demonstration mode
     "demo": [

@@ -9,12 +9,44 @@
                 <xpath expr="//field[@name='user_ids']" position="after">
                     <field name="employee_ids" widget="many2many_tags" options="{'no_open':True, 'no_create': True}" domain="[('type_employee','!=','')]"/>
                 </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='project_id']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worksheet_template_id']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='planned_date_begin']" position="attributes">
+                    <attribute name="widget">date</attribute>
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='planned_date_end']" position="attributes">
+                    <attribute name="widget">date</attribute>
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
                 <xpath expr="//field[@name='worksheet_template_id']" position="after">
                     <field name="pozo"/>
                 </xpath>      
                  <xpath expr="//field[@name='pozo']" position="after">
                     <field name="model_fleet_id" options="{'no_create': True}"/>
-                </xpath>                  
+                </xpath>
+               <xpath expr="//field[@name='pozo']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='model_fleet_id']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='description']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_phone']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>
                 <xpath expr="//field[@name='user_ids']" position="replace">
                     <field name="user_ids" invisible="True"/>
                 </xpath>                
@@ -26,18 +58,37 @@
                 </xpath>
                 <xpath expr="//page[@name='extra_info']" position="attributes">
                     <attribute name="invisible">True</attribute>
-                </xpath>                
+                </xpath>
+                <xpath expr="//field[@name='timesheet_ids']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='planned_hours']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">True</attribute>
+                </xpath>
                 <xpath expr="//page[@name='description_page']" position="after">
                     <page name="binnacle_page" string="Bitácora">
-
                         <field name = "id" invisible = "1"/>
-                        <field name="binnacle_ids" context="{'default_parent_id_int': id}">
-                            <tree editable="top">
+                        <field name = "editable" invisible = "1"/>
+                        <field name="binnacle_ids" context="{'default_parent_id_int': id}" attrs="{'readonly': [('editable', '=', False)]}">
+                            <tree editable="bottom">
                                 <field name = "parent_id_int" invisible = "1" force_save="1"/>
                                 <field name = "parent_id" invisible = "1"/>
                                 <field name = "product_id" domain="[('in_sale_order', '=', parent_id_int)]"/>
                                 <field name = "gruero_id" required="1" options="{'no_open':True, 'no_create': True}" domain="['&amp;', ('type_employee','=','gruero'),('in_project_task', '=', parent_id_int)]"/>
                                 <field name = "ayudante_id" required="1" options="{'no_open':True, 'no_create': True}" domain="['&amp;', ('type_employee','=','ayudante'),('in_project_task', '=', parent_id_int)]"/>
+                                <field name = "date_init" required="1" widget="datetime" />
+                                <field name = "date_end" required="1" widget="datetime" />
+                                <field name = "delta" force_save="1" sum="Delta"/>
+                                <field name = "vehicle_id" required="1" options="{'no_open':True, 'no_create': True}"/>
+                                <field name = "odometer_init" required="1"/>
+                                <field name = "odometer_end" required="1"/>
+                                <field name = "delta_odometer" force_save="1" sum="Delta odómetro"/>
+                                <field name = "hourmeter_init" required="1" widget="float_time"/>
+                                <field name = "hourmeter_end" required="1" widget="float_time"/>
+                                <field name = "delta_hourmeter" widget="float_time" force_save="1" sum="Delta horómetro"/>
+                                <field name = "comment" />
                             </tree>
                         </field>
                     </page>

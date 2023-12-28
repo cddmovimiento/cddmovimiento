@@ -21,7 +21,7 @@ class ModelName(models.Model):
             "sale_order_id": self.order_id.id,
             "company_id": project.company_id.id,
             "user_ids": False,
-            #"model_fleet_id": self.order_id.model_fleet_id.id,
+            "model_fleet_id": self.order_id.model_fleet_id.id,
             'sale_line_id': False,
         }
 

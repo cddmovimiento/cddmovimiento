@@ -1,0 +1,32 @@
+<odoo>
+  <data>
+    <record id="view_fleet_vehicle_view_form_inherit_cdd" model="ir.ui.view">
+        <field name="name">fleet.vehicle.inherit.cdd</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="return_action_to_open_hourmeter"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-spinner"
+                    context="{'xml_id':'fleet_vehicle_hourmeter_action'}"
+                    help="show the hourmeter logs for this vehicle"
+                    attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                    <field name="hourmeter_count" widget="statinfo" string="Horómetro"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//field[@name='vin_sn']" position="after">
+                <label for="hourmeter" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}"/>
+                <div class="o_row" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                    <field name="hourmeter" widget="float_time"/>
+                    <field name="hourmeter_unit"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+  </data>
+</odoo>
+
+

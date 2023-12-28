@@ -12,7 +12,7 @@ class ProductProduct(models.Model):
         search="_search_in_sale_order"
     )
 
-    @api.depends('name')
+    @api.depends("name")
     def _compute_in_sale_order(self):
         self.in_sale_order=1
 
