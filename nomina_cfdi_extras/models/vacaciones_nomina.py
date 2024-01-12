@@ -41,7 +41,8 @@ class VacacionesNomina(models.Model):
     def action_validar(self):
         leave_type = self.env.ref('nomina_cfdi_extras.hr_holidays_status_vac', False)
         if self.fecha_inicial:
-            date_from = datetime.strptime(self.fecha_inicial,"%Y-%m-%d")
+            fecha_inicial = self.fecha_inicial.strftime("%Y-%m-%d")
+            date_from = datetime.strptime(fecha_inicial,"%Y-%m-%d")
             date_to = date_from + relativedelta(days=self.dias - 1)
             date_from = date_from.strftime("%Y-%m-%d") + ' 06:00:00'
             date_to = date_to.strftime("%Y-%m-%d") +' 20:00:00'
@@ -67,7 +68,7 @@ class VacacionesNomina(models.Model):
         date_to = utc_dt_to.strftime ("%Y-%m-%d %H:%M:%S")
 
         nombre = 'Vacaciones_'+self.name
-        registro_falta = self.env['hr.holidays'].search([('name','=', nombre)], limit=1)
+        registro_falta = self.env['hr.leave'].search([('name','=', nombre)], limit=1)
         if registro_falta:
            registro_falta.write({'date_from' : date_from,
                    'date_to' : date_to,
@@ -76,7 +77,7 @@ class VacacionesNomina(models.Model):
                    'state': 'validate',
                    })
         else:
-           holidays_obj = self.env['hr.holidays']
+           holidays_obj = self.env['hr.leave']
            vals = {'date_from' : date_from,
                'holiday_status_id' : leave_type and leave_type.id,
                'employee_id' : self.employee_id.id,
@@ -85,11 +86,11 @@ class VacacionesNomina(models.Model):
                'state': 'confirm',}
 
            holiday = holidays_obj.new(vals)
-           holiday._onchange_employee_id()
-           holiday._onchange_date_from()
+           #holiday._onchange_employee_id()
+           #holiday._onchange_date_from()
            vals.update(holiday._convert_to_write({name: holiday[name] for name in holiday._cache}))
            #holidays_obj.create(vals)
-           vacacion = self.env['hr.holidays'].create(vals)
+           vacacion = self.env['hr.leave'].create(vals)
            vacacion.action_validate()
         self.write({'state':'done'})
 
