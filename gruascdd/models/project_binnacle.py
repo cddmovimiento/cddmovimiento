@@ -34,6 +34,7 @@ class ProjectBinnacle(models.Model):
     date_init = fields.Datetime("Fecha hora inicio")
     date_end = fields.Datetime("Fecha hora final")
     delta = fields.Float("Delta", compute="_compute_delta", store=True)
+    folio = fields.Char("Folio")
     pre_parent_id = fields.Many2one("project.task", string="pre_parent")
     odometer_init = fields.Integer("Odómetro inicial")
     odometer_end = fields.Integer("Odómetro final")

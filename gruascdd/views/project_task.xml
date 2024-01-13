@@ -81,6 +81,7 @@
                                 <field name = "date_init" required="1" widget="datetime" />
                                 <field name = "date_end" required="1" widget="datetime" />
                                 <field name = "delta" force_save="1" sum="Delta"/>
+                                <field name = "folio" force_save="1"/>
                                 <field name = "vehicle_id" required="1" options="{'no_open':True, 'no_create': True}"/>
                                 <field name = "odometer_init" required="1"/>
                                 <field name = "odometer_end" required="1"/>
