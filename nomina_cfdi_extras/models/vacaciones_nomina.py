@@ -110,7 +110,7 @@ class VacacionesNomina(models.Model):
     def action_cancelar(self):
         self.write({'state':'cancel'})
         nombre = 'Vacaciones_'+self.name
-        registro_falta = self.env['hr.holidays'].search([('name','=', nombre)], limit=1)
+        registro_falta = self.env['hr.leave'].search([('name','=', nombre)], limit=1)
         if registro_falta:
            registro_falta.action_refuse() #.write({'state':'cancel'})
 
