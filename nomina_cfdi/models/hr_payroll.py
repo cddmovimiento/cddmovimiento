@@ -298,6 +298,7 @@ class HrPayslip(models.Model):
             day_leave_intervals = contract.employee_id.list_leaves(day_from, day_to, calendar=contract.resource_calendar_id)
             for day_intervals in day_leave_intervals:
                 for interval in day_intervals:
+                    _logger.critical(str(holiday))
                     holiday = interval[2]['leaves'].holiday_id
                     current_leave_struct = leaves.setdefault(holiday.holiday_status_id, {
                         'name': holiday.holiday_status_id.name or 'GLOBAL',
