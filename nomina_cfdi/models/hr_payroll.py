@@ -295,57 +295,53 @@ class HrPayslip(models.Model):
             if contract.periodicidad_pago == '02':
                 dias_pagar = 7
 
-            day_leave_intervals = contract.employee_id.list_leaves(day_from, day_to, calendar=contract.resource_calendar_id)
-            for day_intervals in day_leave_intervals:
-                for interval in day_intervals:
-                    _logger.critical(str(holiday))
-                    holiday = interval[2]['leaves'].holiday_id
-                    current_leave_struct = leaves.setdefault(holiday.holiday_status_id, {
+            leaves = leaves = self.env['hr.leave'].search([
+                ('employee_id', '=', contract.employee_id.id),
+                ('state', 'not in', ['refuse','draft']),
+            ])
+            for holiday in leaves:
+                if not holiday.holiday_status_id.work_entry_type_id:
+                    raise ValidationError("Necesitas agregar un tipo de tiempo de trabajo para el tipo de ausencia:\n"
+                                          + holiday.holiday_status_id.name)
+    
+                work_hours = holiday.number_of_hours_display
+                #current_leave_struct['number_of_hours'] += leave_time
+                if contract.septimo_dia:
+                    if contract.incapa_sept_dia:
+                        if holiday.holiday_status_id.name == 'FJS' or holiday.holiday_status_id.name == 'FI' or holiday.holiday_status_id.name == 'FR' or holiday.holiday_status_id.name == 'INC_EG' or holiday.holiday_status_id.name == 'INC_RT' or holiday.holiday_status_id.name == 'INC_MAT':
+                            leave_days += (holiday.number_of_days)*factor
+                            if leave_days > dias_pagar:
+                                leave_days = dias_pagar
+                        else:
+                            if holiday.holiday_status_id.name != 'DFES' and holiday.holiday_status_id.name != 'DFES_3':
+                                leave_days += holiday.number_of_days
+                    else:
+                        if holiday.holiday_status_id.name == 'FJS' or holiday.holiday_status_id.name == 'FI' or holiday.holiday_status_id.name == 'FR':
+                            leave_days += (holiday.number_of_days)*factor
+                            if leave_days > dias_pagar:
+                                leave_days = dias_pagar
+                        else:
+                            if holiday.holiday_status_id.name != 'DFES' and holiday.holiday_status_id.name != 'DFES_3':
+                                leave_days += holiday.number_of_days
+                elif work_hours:
+                    if contract.incapa_sept_dia:
+                        if holiday.holiday_status_id.name == 'INC_EG' or holiday.holiday_status_id.name == 'INC_RT' or holiday.holiday_status_id.name == 'INC_MAT':
+                            leave_days += (holiday.number_of_days)*factor
+                        else:
+                            if holiday.holiday_status_id.name != 'DFES' and holiday.holiday_status_id.name != 'DFES_3':
+                                leave_days += holiday.number_of_days
+                    else:
+                        if holiday.holiday_status_id.name != 'DFES' and holiday.holiday_status_id.name != 'DFES_3':
+                            leave_days += holiday.number_of_days
+                if leave_days > 0:
+                    current_leave_struct = (0,0,{
+                        'work_entry_type_id': holiday.holiday_status_id.work_entry_type_id.id,
                         'name': holiday.holiday_status_id.name or 'GLOBAL',
-                        'number_of_days': 0.0,
-                        'number_of_hours': 0.0,
+                        'number_of_days': leave_days,
+                        'number_of_hours': work_hours,
                     })
-                    leave_time = (interval[1] - interval[0]).seconds / 3600
-                    #current_leave_struct['number_of_hours'] += leave_time
-                    work_hours = contract.employee_id.get_day_work_hours_count(interval[0].date(), calendar=contract.resource_calendar_id)
-                    if work_hours and contract.septimo_dia:
-                        if contract.incapa_sept_dia:
-                           if holiday.holiday_status_id.name == 'FJS' or holiday.holiday_status_id.name == 'FI' or holiday.holiday_status_id.name == 'FR' or holiday.holiday_status_id.name == 'INC_EG' or holiday.holiday_status_id.name == 'INC_RT' or holiday.holiday_status_id.name == 'INC_MAT':
-                              leave_days += (leave_time / work_hours)*factor
-                              current_leave_struct['number_of_days'] += (leave_time / work_hours)*factor
-                              if leave_days > dias_pagar:
-                                 leave_days = dias_pagar
-                              if current_leave_struct['number_of_days'] > dias_pagar:
-                                 current_leave_struct['number_of_days'] = dias_pagar
-                           else:
-                              if holiday.holiday_status_id.name != 'DFES' and holiday.holiday_status_id.name != 'DFES_3':
-                                 leave_days += leave_time / work_hours
-                              current_leave_struct['number_of_days'] += leave_time / work_hours
-                        else:
-                           if holiday.holiday_status_id.name == 'FJS' or holiday.holiday_status_id.name == 'FI' or holiday.holiday_status_id.name == 'FR':
-                              leave_days += (leave_time / work_hours)*factor
-                              current_leave_struct['number_of_days'] += (leave_time / work_hours)*factor
-                              if leave_days > dias_pagar:
-                                 leave_days = dias_pagar
-                              if current_leave_struct['number_of_days'] > dias_pagar:
-                                 current_leave_struct['number_of_days'] = dias_pagar
-                           else:
-                              if holiday.holiday_status_id.name != 'DFES' and holiday.holiday_status_id.name != 'DFES_3':
-                                 leave_days += leave_time / work_hours
-                              current_leave_struct['number_of_days'] += leave_time / work_hours
-                    elif work_hours:
-                        if contract.incapa_sept_dia:
-                           if holiday.holiday_status_id.name == 'INC_EG' or holiday.holiday_status_id.name == 'INC_RT' or holiday.holiday_status_id.name == 'INC_MAT':
-                              leave_days += (leave_time / work_hours)*factor
-                              current_leave_struct['number_of_days'] += (leave_time / work_hours)*factor
-                           else:
-                              if holiday.holiday_status_id.name != 'DFES' and holiday.holiday_status_id.name != 'DFES_3':
-                                 leave_days += leave_time / work_hours
-                              current_leave_struct['number_of_days'] += leave_time / work_hours
-                        else:
-                           if holiday.holiday_status_id.name != 'DFES' and holiday.holiday_status_id.name != 'DFES_3':
-                              leave_days += leave_time / work_hours
-                           current_leave_struct['number_of_days'] += leave_time / work_hours
+                    res.append(current_leave_struct)
+
 
             # compute worked days
             #work_data = contract.employee_id.with_context(no_tz_convert=True)._get_work_days_data_batch(day_from, day_to, calendar=contract.resource_calendar_id)
@@ -537,7 +533,7 @@ class HrPayslip(models.Model):
                 })
                 res.append(attendances)
                 
-            res.extend(leaves.values())
+            #res.extend(leaves.values())
         
         return res
 
