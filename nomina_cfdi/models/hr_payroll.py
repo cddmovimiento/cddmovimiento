@@ -848,7 +848,7 @@ class HrPayslip(models.Model):
         payslip_total_JPRE = 0
 
         if self.contract_id.date_end:
-            antiguedad = (self.contract_id.date_end - self.contract_id.date_start + timedelta(days=1).days) / 7
+            antiguedad = ((self.contract_id.date_end - self.contract_id.date_start) + 1) / 7
         else:
             antiguedad = ((self.date_to - self.contract_id.date_start).days + 1) /7
 
