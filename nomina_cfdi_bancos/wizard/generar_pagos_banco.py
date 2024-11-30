@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import Warning
+from odoo.exceptions import ValidationError
 from datetime import datetime, date
 import base64
 import logging
@@ -173,9 +173,9 @@ class GenerarPagosBanco(models.TransientModel):
                    str_sumario.append((sum1)+(sum2)+(sum3)+(sum4)+(sum5))
 
 #            else:
-#               raise Warning("Banco no compatible con la dispersión.")
+#               raise ValidationError("Banco no compatible con la dispersión.")
         if not file_text:
-            raise Warning("No hay información para generar el archivo de dispersión.")
+            raise ValidationError("No hay información para generar el archivo de dispersión.")
         file_text = str_encabezado + file_text + str_sumario
         file_text = '\r\n'.join(file_text)
         file_text = file_text.encode()
