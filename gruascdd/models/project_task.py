@@ -30,18 +30,19 @@ class ProjectTask(models.Model):
 
     editable = fields.Boolean("Editable", default=True)
 
-    @api.model
-    def create(self, vals):
-        self.editable = True
-        result = super(ProjectTask, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals['editable'] = True
+        
+        tasks = super(ProjectTask, self).create(vals_list)
 
-        if result.sale_order_id:
-            total_hours = 0
-            for line in result.sale_order_id.order_line:
-                total_hours += line.product_uom_qty
+        for task in tasks:
+            if task.sale_order_id:
+                total_hours = sum(line.product_uom_qty for line in task.sale_order_id.order_line)
+                task.allocated_hours = total_hours * 2
 
-            result.allocated_hours = total_hours * 2
-        return result
+        return tasks
 
     def action_fsm_validate(self):
         super().action_fsm_validate()

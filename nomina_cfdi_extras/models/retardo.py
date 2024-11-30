@@ -14,12 +14,16 @@ class RetardoNomina(models.Model):
     fecha = fields.Date('Fecha')
     state = fields.Selection([('draft', 'Borrador'), ('done', 'Hecho'), ('cancel', 'Cancelado')], string='State', default='draft')
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('retardo.nomina') or _('New')
-        result = super(RetardoNomina, self).create(vals)
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Asignar una secuencia única si 'name' tiene el valor por defecto
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('retardo.nomina') or _('New')
+        
+        # Procesar la creación en lote
+        records = super(RetardoNomina, self).create(vals_list)
+        return records
 
     def action_validar(self):
         self.write({'state':'done'})

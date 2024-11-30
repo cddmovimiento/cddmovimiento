@@ -47,7 +47,7 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
                             <field name="loan_id" domain="[('employee_id','=',employee_id),('state','=','done')]" 
                             					  widget="selection" readonly="state != 'draft'"/>
                             <field name="installment_id" domain="[('loan_id','=',loan_id),('is_paid','!=',True)]" 
-                            					  widget="selection"  readonly="state != 'draft'"/>
+                            					  widget="selection"  readonly="state != 'draft'" required="1"/>
                         </group>
                         <group>
                         	<field name="date" readonly="state != 'draft'"/>
@@ -59,7 +59,7 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
                     <notebook>
                         <page string="Razón">
                         	<br/>
-                            <field name="notes" readonly="state != 'draft'"/>
+                            <field name="notes" readonly="state != 'draft'" required="1"/>
                         </page>
                     </notebook>
 				</sheet>

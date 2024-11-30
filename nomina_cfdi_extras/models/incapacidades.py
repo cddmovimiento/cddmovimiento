@@ -25,12 +25,16 @@ class IncapacidadesNomina(models.Model):
     state = fields.Selection([('draft', 'Borrador'), ('done', 'Hecho'), ('cancel', 'Cancelado')], string='Estado', default='draft')
     folio_incapacidad = fields.Char('Folio de incapacidad')
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('incapacidades.nomina') or _('New')
-        result = super(IncapacidadesNomina, self).create(vals)
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Asignar una secuencia única si 'name' tiene el valor por defecto
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('incapacidades.nomina') or _('New')
+        
+        # Crear los registros en lote
+        records = super(IncapacidadesNomina, self).create(vals_list)
+        return records
 
 #    @api.onchange('folio_incapacidad')
 #    def _check_folio_length(self):

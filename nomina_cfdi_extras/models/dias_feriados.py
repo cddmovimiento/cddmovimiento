@@ -16,12 +16,16 @@ class DiasFeriados(models.Model):
     state = fields.Selection([('draft', 'Borrador'), ('done', 'Hecho'), ('cancel', 'Cancelado')], string='Estado', default='draft')
     tipo = fields.Selection([('doble', 'Doble'), ('triple', 'Triple')], string='Tipo', default='doble')
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('dias.feriados') or _('New')
-        result = super(DiasFeriados, self).create(vals)
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Asignar secuencia si el campo 'name' es 'New'
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('dias.feriados') or _('New')
+        
+        # Procesar la creación en lote
+        records = super(DiasFeriados, self).create(vals_list)
+        return records
 
     def action_validar(self):
         if self.fecha:

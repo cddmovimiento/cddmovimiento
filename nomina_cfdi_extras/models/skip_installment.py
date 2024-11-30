@@ -24,10 +24,10 @@ class dev_skip_installment(models.Model):
     name = fields.Char('Nombre', default='/')
     employee_id = fields.Many2one('hr.employee',string='Empleado', default=_get_employee)
     loan_id = fields.Many2one('employee.loan',string='Deducción')
-    installment_id = fields.Many2one('installment.line',string='Entrega', required="1")
+    installment_id = fields.Many2one('installment.line',string='Entrega')
     date = fields.Date('Fecha', default=fields.datetime.now())
     user_id = fields.Many2one('res.users',string='Usuario', default=_get_default_user)
-    notes = fields.Text('Razón', required="1")
+    notes = fields.Text('Razón')
 #    manager_id = fields.Many2one('hr.employee',string='Gerente de departamento', required="1")
     skip_installment_url = fields.Char('URL', compute='get_url')
 #    hr_manager_id = fields.Many2one('hr.employee',string='Gerente de RH')
@@ -189,12 +189,17 @@ class dev_skip_installment(models.Model):
     def set_to_draft(self):
         self.state = 'draft'
     
-    @api.model
-    def create(self, vals):
-        if vals.get('name', '/') == '/':
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'dev.skip.installment') or '/'
-        return super(dev_skip_installment, self).create(vals)
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Verificar si 'name' tiene el valor por defecto '/' y asignar una secuencia única
+            if vals.get('name', '/') == '/':
+                vals['name'] = self.env['ir.sequence'].next_by_code('dev.skip.installment') or '/'
+        
+        # Crear los registros en lote
+        records = super(dev_skip_installment, self).create(vals_list)
+        return records
         
     def copy(self, default=None):
         if default is None:

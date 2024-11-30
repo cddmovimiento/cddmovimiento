@@ -30,12 +30,16 @@ class VacacionesNomina(models.Model):
             raise UserError("No tiene suficientes dias de vacaciones")
             
         
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('vacaciones.nomina') or _('New')
-        result = super(VacacionesNomina, self).create(vals)
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Verificar si 'name' tiene el valor por defecto y asignar una secuencia única
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('vacaciones.nomina') or _('New')
+        
+        # Crear los registros en lote
+        records = super(VacacionesNomina, self).create(vals_list)
+        return records
     
     def action_validar(self):
         leave_type = self.env.ref('nomina_cfdi_extras.hr_holidays_status_vac', False)

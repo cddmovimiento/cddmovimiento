@@ -582,12 +582,15 @@ class HrPayslip(models.Model):
             else:
                 raise UserError(_('No están configurados correctamente los periodos semanales en las tablas CFDI'))
 
-    @api.model
-    def create(self, vals):
-        if not vals.get('fecha_pago') and vals.get('date_to'):
-            vals.update({'fecha_pago': vals.get('date_to')})
-            
-        res = super(HrPayslip, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Si no hay 'fecha_pago' pero sí 'date_to', usar 'date_to' como 'fecha_pago'
+            if not vals.get('fecha_pago') and vals.get('date_to'):
+                vals['fecha_pago'] = vals.get('date_to')
+        
+        # Llamar al método original de creación para procesar en lote
+        res = super(HrPayslip, self).create(vals_list)
         return res
     
     @api.depends('number')

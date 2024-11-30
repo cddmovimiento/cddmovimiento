@@ -21,6 +21,7 @@ except ImportError:
 
 class projectTaskXlsx(models.AbstractModel):
     _name = 'report.project.task.xlsx'
+    _description = 'Reporte de tareas en excel'
     _inherit = 'report.report_xlsx.abstract'
 
     def float_time_convert(self, float_val):

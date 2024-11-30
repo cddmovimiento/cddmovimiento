@@ -4,7 +4,7 @@ from odoo import api, fields, models
 class FleetVehicle(models.Model):
     _inherit = "fleet.vehicle"
 
-    hourmeter_count = fields.Integer(compute="_compute_count_all_hourmeter", string='Horómetro')
+    hourmeter_count = fields.Integer(compute="_compute_count_all_hourmeter", string='Horómetro ')
     hourmeter = fields.Float(compute='_get_hourmeter', inverse='_set_hourmeter', string='Último horómetro', help='Horómetro del vehículo en el momento de este registro')
     
     gas_count = fields.Integer(compute="_compute_count_all_gas_carge", string='Diésel')
@@ -13,7 +13,7 @@ class FleetVehicle(models.Model):
     hourmeter_unit = fields.Selection([
         ('hours', 'hrs'),
         ('minutes', 'min')
-    ], 'Unidad de horómetro', default='hours', help='Unidad del horómetro', required=True)
+    ], 'Unidad de horómetro ', default='hours', help='Unidad del horómetro', required=True)
 
     gas_unit = fields.Selection([
         ('litros', 'l')

@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class ProjectBinnacle(models.Model):
     _name = "project.binnacle"
+    _description = "Bitácora"
 
     parent_id = fields.Many2one(
         "project.task",
@@ -172,96 +173,83 @@ class ProjectBinnacle(models.Model):
             if self.gasolina < 0:
                 raise ValidationError("El valor debe ser mayor que 0")
 
-    @api.model
-    def create(self, vals):
-        bandera = False
-        tz = self.env.user.tz  # Find Timezone from user or partner or employee
-        att_tz = timezone(tz or 'utc') 
-        
-        date_end = vals["date_end"] if "date_end" in vals else self.date_end
-        date_init = vals["date_init"] if "date_init" in vals else self.date_init
-        vehicle_id = vals["vehicle_id"] if "vehicle_id" in vals else self.vehicle_id
-        id = vals["id"] if "id" in vals else self.id
-        hourmeter_end = vals["hourmeter_end"] if "hourmeter_end" in vals else self.hourmeter_end
-        odometer_end = vals["odometer_end"] if "odometer_end" in vals else self.odometer_end
-        gasolina = vals["gasolina"] if "gasolina" in vals else self.gasolina
-        gruero_id = vals["gruero_id"] if "gruero_id" in vals else self.gruero_id
-        parent_id = vals["parent_id"] if "parent_id" in vals else self.parent_id
-        folio = vals["folio"] if "folio" in vals else self.folio
-        parent_id_int = vals["parent_id_int"] if "parent_id_int" in vals else self.parent_id_int
-        
-        tz = self.env.user.tz  # Find Timezone from user or partner or employee
-        att_tz = timezone(tz or 'utc') # If no tz then return in UTC
-        attendance_dt = datetime.strptime(str(date_end), DEFAULT_SERVER_DATETIME_FORMAT) #Input date
-        att_tz_dt = pytz.utc.localize(attendance_dt)
-        local_date_end = att_tz_dt.astimezone(att_tz) # converted value to tz
-        
-        # Crea registro del Horómetro en el vehículo
-        result_hourmeter = self.env["fleet.vehicle.hourmeter"].sudo().create({
-            "date": local_date_end.date(),
-            "value": hourmeter_end,
-            "vehicle_id": vehicle_id,
-            "driver_employee_id": gruero_id,
-            "binnacle_id": id,
-            "folio": folio
-        })
+    @api.model_create_multi
+    def create(self, vals_list):
+        results = []
+        for vals in vals_list:
+            # Obtener valores de `vals` o usar los valores del modelo
+            date_end = vals.get("date_end", self.date_end)
+            date_init = vals.get("date_init", self.date_init)
+            vehicle_id = vals.get("vehicle_id", self.vehicle_id)
+            hourmeter_end = vals.get("hourmeter_end", self.hourmeter_end)
+            odometer_end = vals.get("odometer_end", self.odometer_end)
+            gasolina = vals.get("gasolina", self.gasolina)
+            gruero_id = vals.get("gruero_id", self.gruero_id)
+            parent_id_int = vals.get("parent_id_int", self.parent_id_int)
+            folio = vals.get("folio", self.folio)
+            tz = self.env.user.tz or 'utc'
 
-        # Crea registro del Odometro en el vehículo
-        result_odometer = self.env["fleet.vehicle.odometer"].sudo().create({
-            "date": local_date_end.date(),
-            "value": odometer_end,
-            "vehicle_id": vehicle_id,
-            "driver_employee_id": gruero_id,
-            "binnacle_id": id,
-            "folio": folio
-        })
-
-        # Crea registro del Diesel en el vehículo
-        result_gas = self.env["fleet.vehicle.gas"].sudo().create({
-            "date": local_date_end.date(),
-            "value": gasolina,
-            "vehicle_id": vehicle_id,
-            "driver_employee_id": gruero_id,
-            "binnacle_id": id,
-            "folio": folio
-        })
-
-        vals["hourmeter_id"] = result_hourmeter
-        vals["odometer_id"] = result_odometer
-        vals["gas_id"] = result_gas
-
-        result = super(ProjectBinnacle, self).create(vals)
-        
-        binnacle = self.env['project.binnacle'].sudo().search([('parent_id_int', '=', parent_id_int)], order='date_init asc')
-
-        for line in binnacle[0]:
-             self.env['project.binnacle'].sudo().search([('id', '=', line.id)]).write({"salto_secuencia": False})
-
-        for i in binnacle[1:]:
-            attendance_dt = datetime.strptime(str(i.date_init), DEFAULT_SERVER_DATETIME_FORMAT) #Input date
+            # Convertir fecha a zona horaria del usuario
+            att_tz = pytz.timezone(tz)
+            attendance_dt = datetime.strptime(str(date_end), DEFAULT_SERVER_DATETIME_FORMAT)
             att_tz_dt = pytz.utc.localize(attendance_dt)
-            local_date_init = att_tz_dt.astimezone(att_tz)
-            date_before = local_date_init.date() + timedelta(days=-1)
+            local_date_end = att_tz_dt.astimezone(att_tz)
 
-            #_logger.info("date_before:" + str(date_before))
-            #_logger.info("local_date_init:" + str(local_date_init.date()))
-            
-            for j in binnacle:
-                attendance_dt = datetime.strptime(str(j.date_end), DEFAULT_SERVER_DATETIME_FORMAT) #Input date
-                att_tz_dt = pytz.utc.localize(attendance_dt)
-                local_date_end_db = att_tz_dt.astimezone(att_tz) # converted value to tz
+            # Crear registros de horómetro, odómetro y gasolina
+            vals["hourmeter_id"] = self.env["fleet.vehicle.hourmeter"].sudo().create({
+                "date": local_date_end.date(),
+                "value": hourmeter_end,
+                "vehicle_id": vehicle_id,
+                "driver_employee_id": gruero_id,
+                "binnacle_id": self.id,
+                "folio": folio,
+            }).id
 
-                #_logger.info("local_date_end_db:" + str(local_date_end_db.date()))
+            vals["odometer_id"] = self.env["fleet.vehicle.odometer"].sudo().create({
+                "date": local_date_end.date(),
+                "value": odometer_end,
+                "vehicle_id": vehicle_id,
+                "driver_employee_id": gruero_id,
+                "binnacle_id": self.id,
+                "folio": folio,
+            }).id
 
-                if local_date_end_db.date() == date_before or local_date_end_db.date() == local_date_init.date():
-                    bandera = False
-                    break
-                else:
-                    bandera = True
+            vals["gas_id"] = self.env["fleet.vehicle.gas"].sudo().create({
+                "date": local_date_end.date(),
+                "value": gasolina,
+                "vehicle_id": vehicle_id,
+                "driver_employee_id": gruero_id,
+                "binnacle_id": self.id,
+                "folio": folio,
+            }).id
 
-            self.env['project.binnacle'].sudo().search([('id', '=', i.id)]).write({"salto_secuencia": bandera})
+            # Crear el registro principal
+            result = super(ProjectBinnacle, self).create(vals)
+            results.append(result)
 
-        return result
+            # Actualizar saltos de secuencia en el historial
+            binnacle_records = self.env['project.binnacle'].sudo().search(
+                [('parent_id_int', '=', parent_id_int)],
+                order='date_init asc'
+            )
+
+            for idx, record in enumerate(binnacle_records):
+                bandera = False
+                if idx > 0:
+                    prev_record = binnacle_records[idx - 1]
+                    prev_date_end = pytz.utc.localize(datetime.strptime(
+                        str(prev_record.date_end), DEFAULT_SERVER_DATETIME_FORMAT
+                    )).astimezone(att_tz).date()
+
+                    current_date_init = pytz.utc.localize(datetime.strptime(
+                        str(record.date_init), DEFAULT_SERVER_DATETIME_FORMAT
+                    )).astimezone(att_tz).date()
+
+                    bandera = prev_date_end != current_date_init - timedelta(days=1)
+
+                record.sudo().write({"salto_secuencia": bandera})
+
+        return results if len(results) > 1 else results[0]
         
     @api.model
     def write(self, vals):

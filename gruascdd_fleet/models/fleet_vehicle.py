@@ -4,9 +4,9 @@ from odoo import api, fields, models
 class FleetVehicle(models.Model):
     _inherit = "fleet.vehicle"
 
-    mantenimiento_A = fields.Float(string="Mantenimiento 400", default=400)
-    mantenimiento_B = fields.Float(string="Mantenimiento 400", default=1600)
-    mantenimiento_C = fields.Float(string="Mantenimiento 400", default=4000)
+    mantenimiento_A = fields.Float(string="Mantenimiento 400 ", default=400)
+    mantenimiento_B = fields.Float(string="Mantenimiento 400  ", default=1600)
+    mantenimiento_C = fields.Float(string="Mantenimiento 400   ", default=4000)
     
     horometro_control_4000 = fields.Float(string='Mamtenimiento Horómetro 4,000')
     horometro_control_1600 = fields.Float(string='Mantenimiento Horómetro 1,600')

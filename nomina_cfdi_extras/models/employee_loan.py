@@ -398,12 +398,16 @@ class employee_loan(models.Model):
     def action_done_loan(self):
         self.state = 'done'
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', '/') == '/':
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'employee.loan') or '/'
-        return super(employee_loan, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Verifica si 'name' es '/' y genera una secuencia única
+            if vals.get('name', '/') == '/':
+                vals['name'] = self.env['ir.sequence'].next_by_code('employee.loan') or '/'
+        
+        # Procesar la creación en lote
+        records = super(employee_loan, self).create(vals_list)
+        return records
 
     def copy(self, default=None):
         if default is None:
