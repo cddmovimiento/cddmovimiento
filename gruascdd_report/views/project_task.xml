@@ -1,6 +1,16 @@
 <odoo>
   <data>
     <!-- account.move inherit form view -->
+    <record id="view_task_form3_inherit" model="ir.ui.view">
+        <field name="name">view.task.form3</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_timer_start']" position="before">
+                <button name="action_report_domain" string="Imprimir bitácora" type="object" class="oe_highlight" icon="fa-print"/>
+            </xpath>
+        </field>
+    </record>
 
     <record id="view_kanban_project_task_cddmovimiento" model="ir.ui.view">
         <field name="name">gruascdd_report.project_task_kanban</field>
