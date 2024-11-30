@@ -8,6 +8,7 @@
     "version": "2.5.1",
     "license": "OPL-1",
 
+
     # any module necessary for this one to work correctly
     "depends": ["base","project","sale","sale_project","hr","hr_timesheet", "industry_fsm","fleet"],
 
