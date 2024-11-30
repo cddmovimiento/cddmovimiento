@@ -22,8 +22,8 @@ class dev_skip_installment(models.Model):
         return self.env.user
 
     name = fields.Char('Nombre', default='/')
-    employee_id = fields.Many2one('hr.employee',string='Empleado',required="1", default=_get_employee)
-    loan_id = fields.Many2one('employee.loan',string='Deducción',required="1")
+    employee_id = fields.Many2one('hr.employee',string='Empleado', default=_get_employee)
+    loan_id = fields.Many2one('employee.loan',string='Deducción')
     installment_id = fields.Many2one('installment.line',string='Entrega', required="1")
     date = fields.Date('Fecha', default=fields.datetime.now())
     user_id = fields.Many2one('res.users',string='Usuario', default=_get_default_user)
@@ -37,7 +37,7 @@ class dev_skip_installment(models.Model):
                               ('confirm','Confirmar'),
                               ('done','Hecho'),
                               ('reject','Rechazar'),
-                              ('cancel','Cancelar'),], string='Estado', default='draft', track_visibility='onchange')
+                              ('cancel','Cancelar'),], string='Estado', default='draft')
 
     @api.depends('installment_id')
     def get_url(self):

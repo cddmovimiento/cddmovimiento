@@ -29,10 +29,9 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
          
             <xpath expr="//page//group[@name='active_group']" position="after">
                 <group string="Prestamo" name="hr_loan">
-                    <field name="loan_request"/>
+                    <field name="loan_request" required="1"/>
                 </group>
             </xpath>
          </field>
     </record>
 </odoo>
-

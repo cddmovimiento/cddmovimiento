@@ -13,16 +13,16 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
 				<sheet>
                     <group>
                         <group>
-                            <field name="name"/>
-                            <field name="loan_limit"/>
-                            <field name="loan_term"/>
+                            <field name="name" required="1"/>
+                            <field name="loan_limit" required="1"/>
+                            <field name="loan_term" required="1"/>
                         </group>
                         <group>
                             <field name="is_apply_interest"/>
                             <field name="interest_rate" invisible="not is_apply_interest"/>
                             <field name="interest_type" invisible="not is_apply_interest"/>
-                            <field name="periodo_de_pago"/>
-                            <field name="tipo_deduccion"/>
+                            <field name="periodo_de_pago" required="1"/>
+                            <field name="tipo_deduccion" required="1"/>
                         </group>
                     </group>
                     <group>

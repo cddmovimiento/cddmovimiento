@@ -9,7 +9,7 @@ class installment_line(models.Model):
 
     name = fields.Char('Nombre')
     employee_id = fields.Many2one('hr.employee',string='Empleado')
-    loan_id = fields.Many2one('employee.loan',string='Deducción',required="1", ondelete='cascade')
+    loan_id = fields.Many2one('employee.loan',string='Deducción', ondelete='cascade')
     date = fields.Date('Fecha')
     is_paid = fields.Boolean('Pagado')
     amount = fields.Float('Monto de la deducción')
