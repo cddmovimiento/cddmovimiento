@@ -9,53 +9,10 @@
                 <xpath expr="//field[@name='user_ids']" position="after">
                     <field name="employee_ids" widget="many2many_tags" options="{'no_open':True, 'no_create': True}" domain="[('type_employee','!=','')]"/>
                 </xpath>
-                <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='project_id']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='worksheet_template_id']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='planned_date_begin']" position="attributes">
-                    <attribute name="widget">date</attribute>
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='planned_date_end']" position="attributes">
-                    <attribute name="widget">date</attribute>
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='worksheet_template_id']" position="after">
-                    <field name="pozo"/>
-                </xpath>      
-                 <xpath expr="//field[@name='pozo']" position="after">
-                    <field name="model_fleet_id" options="{'no_create': True}"/>
-                </xpath>
-               <xpath expr="//field[@name='pozo']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='model_fleet_id']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='partner_id']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='description']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='partner_phone']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
-                </xpath>
+
                 <xpath expr="//field[@name='user_ids']" position="replace">
                     <field name="user_ids" invisible="True"/>
                 </xpath>                
-                <xpath expr="//button[@name='action_assign_to_me']" position="attributes">
-                    <attribute name="invisible">True</attribute>
-                </xpath>             
-                <xpath expr="//field[@name='sale_line_id']" position="replace">
-                    <field name="sale_line_id" invisible="True"/>
-                </xpath>
                 <xpath expr="//page[@name='extra_info']" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
