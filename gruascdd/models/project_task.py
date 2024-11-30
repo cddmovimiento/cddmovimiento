@@ -28,7 +28,7 @@ class ProjectTask(models.Model):
         string="Bitácora"
     )
 
-    editable = fields.Boolean("Editable", default=True, store=True)
+    editable = fields.Boolean("Editable", default=True)
 
     @api.model_create_multi
     def create(self, vals_list):

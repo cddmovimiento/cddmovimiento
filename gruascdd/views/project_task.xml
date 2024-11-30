@@ -9,10 +9,14 @@
                 <xpath expr="//field[@name='user_ids']" position="after">
                     <field name="employee_ids" widget="many2many_tags" options="{'no_open':True, 'no_create': True}" domain="[('type_employee','!=','')]"/>
                 </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">[('editable','=',False)]</attribute>
+                </xpath>
 
                 <xpath expr="//field[@name='user_ids']" position="replace">
                     <field name="user_ids" invisible="True"/>
-                </xpath>                
+                </xpath>
                 <xpath expr="//page[@name='extra_info']" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
