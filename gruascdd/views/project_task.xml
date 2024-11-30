@@ -11,9 +11,42 @@
                 </xpath>
                 <xpath expr="//field[@name='name']" position="attributes">
                     <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
-                    <attribute name="readonly">[('editable','=',False)]</attribute>
+                    <attribute name="readonly">not editable</attribute>
                 </xpath>
-
+                <xpath expr="//field[@name='project_id']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">not editable</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worksheet_template_id']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">not editable</attribute>
+                </xpath>
+                <xpath expr="//field[@name='planned_date_begin']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">not editable</attribute>
+                </xpath>
+                <!--
+                **FIELD DOESNT EXIST IN ODOO 17**
+                <xpath expr="//field[@name='planned_date_end']" position="attributes">
+                    <attribute name="widget">date</attribute>
+                    <attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>
+                </xpath>-->
+                <field name="user_ids" position="before">
+                    <field name="pozo" readonly="not editable"/>
+                    <field name="model_fleet_id" options="{'no_create': True}"/>
+                </field>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">not editable</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_phone']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">not editable</attribute>
+                </xpath>
+                <xpath expr="//field[@name='description']" position="attributes">
+                    <!--<attribute name="attrs">{'readonly':[('editable','=',False)]}</attribute>-->
+                    <attribute name="readonly">not editable</attribute>
+                </xpath>
                 <xpath expr="//field[@name='user_ids']" position="replace">
                     <field name="user_ids" invisible="True"/>
                 </xpath>
