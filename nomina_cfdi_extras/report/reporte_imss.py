@@ -5,6 +5,7 @@ from odoo import models
 
 class PartnerXlsx(models.AbstractModel):
     _name = 'report.nomina_cfdi_extras.report_imss_payslip_batch'
+    _description = 'Reporte de control de nómina'
     _inherit = 'report.report_xlsx.abstract'
 
     def generate_xlsx_report(self, workbook, data, payslip_batches):
