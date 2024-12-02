@@ -118,33 +118,34 @@ class ProjectBinnacle(models.Model):
             att_tz = timezone(tz or 'utc') 
             
             binnacle = self.env['project.binnacle'].sudo().search([('parent_id_int', '=', i.parent_id_int)], order='date_init asc')
+
+            if binnacle:
+                for line in binnacle[0]:
+                    self.env['project.binnacle'].sudo().search([('id', '=', line.id)]).write({"salto_secuencia": False})
                 
-            for line in binnacle[0]:
-                self.env['project.binnacle'].sudo().search([('id', '=', line.id)]).write({"salto_secuencia": False})
-            
-            for i in binnacle[1:]:
-                attendance_dt = datetime.strptime(str(i.date_init), DEFAULT_SERVER_DATETIME_FORMAT) #Input date
-                att_tz_dt = pytz.utc.localize(attendance_dt)
-                local_date_init = att_tz_dt.astimezone(att_tz)
-                date_before = local_date_init.date() + timedelta(days=-1)
-            
-                    #_logger.info("date_before:" + str(date_before))
-                    #_logger.info("local_date_init:" + str(local_date_init.date()))
-                        
-                for j in binnacle:
-                    attendance_dt = datetime.strptime(str(j.date_end), DEFAULT_SERVER_DATETIME_FORMAT) #Input date
+                for i in binnacle[1:]:
+                    attendance_dt = datetime.strptime(str(i.date_init), DEFAULT_SERVER_DATETIME_FORMAT) #Input date
                     att_tz_dt = pytz.utc.localize(attendance_dt)
-                    local_date_end_db = att_tz_dt.astimezone(att_tz) # converted value to tz
-            
-                         #_logger.info("local_date_end_db:" + str(local_date_end_db.date()))
-            
-                    if local_date_end_db.date() == date_before or local_date_end_db.date() == local_date_init.date():
-                        bandera = False
-                        break
-                    else:
-                        bandera = True
-            
-                self.env['project.binnacle'].sudo().search([('id', '=', i.id)]).write({"salto_secuencia": bandera})  
+                    local_date_init = att_tz_dt.astimezone(att_tz)
+                    date_before = local_date_init.date() + timedelta(days=-1)
+                
+                        #_logger.info("date_before:" + str(date_before))
+                        #_logger.info("local_date_init:" + str(local_date_init.date()))
+                            
+                    for j in binnacle:
+                        attendance_dt = datetime.strptime(str(j.date_end), DEFAULT_SERVER_DATETIME_FORMAT) #Input date
+                        att_tz_dt = pytz.utc.localize(attendance_dt)
+                        local_date_end_db = att_tz_dt.astimezone(att_tz) # converted value to tz
+                
+                            #_logger.info("local_date_end_db:" + str(local_date_end_db.date()))
+                
+                        if local_date_end_db.date() == date_before or local_date_end_db.date() == local_date_init.date():
+                            bandera = False
+                            break
+                        else:
+                            bandera = True
+                
+                    self.env['project.binnacle'].sudo().search([('id', '=', i.id)]).write({"salto_secuencia": bandera})  
             
                 
     @api.onchange("date_init", "date_end")
