@@ -92,7 +92,7 @@
                         ImporteExento="{{ PercepcionExc['ImporteExento'] }}"/>
                 {% endfor %}
             </nomina12:Percepciones>
-            {% if data['Deducciones']['TotalOtrasDeducciones']|float > 0 % or data['Deducciones']['TotalImpuestosRetenidos'] != '' %}
+            {% if data['Deducciones']['TotalOtrasDeducciones']|float > 0 or data['Deducciones']['TotalImpuestosRetenidos'] != '' %}
                 <nomina12:Deducciones 
                     {% if data['Deducciones']['TotalOtrasDeducciones']|float > 0 %} TotalOtrasDeducciones="{{ data['Deducciones']['TotalOtrasDeducciones'] }}" {% endif %}
                     {% if data['Deducciones']['TotalImpuestosRetenidos'] != '' %} TotalImpuestosRetenidos="{{ data['Deducciones']['TotalImpuestosRetenidos'] }}" {% endif %}> 
