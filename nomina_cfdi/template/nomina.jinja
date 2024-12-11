@@ -93,7 +93,7 @@
                 {% endfor %}
             </nomina12:Percepciones>
             <nomina12:Deducciones 
-                TotalOtrasDeducciones="{{ data['Deducciones']['TotalOtrasDeducciones'] }}" 
+                {% if data['Deducciones']['TotalOtrasDeducciones']  != '' %} TotalOtrasDeducciones="{{ data['Deducciones']['TotalOtrasDeducciones'] }}" {% endif %}
                 {% if data['Deducciones']['TotalImpuestosRetenidos'] != '' %} TotalImpuestosRetenidos="{{ data['Deducciones']['TotalImpuestosRetenidos'] }}" {% endif %}> 
                     {% for Deduccion in data['Deduccion'] %}
                         <nomina12:Deduccion 
