@@ -1160,6 +1160,11 @@ class HrPayslip(models.Model):
                 'TotalImpuestosRetenidos': ''
             }
 
+        periodicidadPago = '99'
+
+        if self.tipo_nomina == 'O':
+            periodicidadPago = str(self.contract_id.periodicidad_pago)
+
         data = {
             'Atributos': {
                 'Fecha': cur_time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -1225,7 +1230,7 @@ class HrPayslip(models.Model):
                 'Departamento': '',##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
                 'Puesto': '',##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
                 'RiesgoPuesto': str(self.contract_id.riesgo_puesto) or '',
-                'PeriodicidadPago': str(self.contract_id.periodicidad_pago) or '',
+                'PeriodicidadPago': periodicidadPago or '',
                 'CuentaBancaria': '',##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
                 'Banco': '',##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
                 'SalarioBaseCotApor': str(round(self.contract_id.sueldo_base_cotizacion,2)) or '',
@@ -1313,7 +1318,7 @@ class HrPayslip(models.Model):
             'TipoRegimen': self.employee_id.tipo_regimen,
             'NumEmpleado': self.employee_id.no_empleado or '',
             'RiesgoPuesto': str(self.contract_id.riesgo_puesto) or '',
-            'PeriodicidadPago': str(self.contract_id.periodicidad_pago) or '',
+            'PeriodicidadPago': periodicidadPago or '',
             'SalarioBaseCotApor': str(round(self.contract_id.sueldo_base_cotizacion,2)) or '',
             'SalarioDiarioIntegrado': str(round(self.contract_id.sueldo_diario_integrado,2)) or '',
             'ClaveEntFed': self.employee_id.estado.code or '',
