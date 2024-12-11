@@ -1246,11 +1246,19 @@ class HrPayslip(models.Model):
                 'Percepcion': lineas_de_percepcion,
                 'PercepcionExc': lineas_de_percepcion_exentas,
             },
-            'Deducciones': Deducciones,
-            'Deduccion': lineas_deduccion,
-            'OtrosPagos': lineas_de_otros,
+            #'Deducciones': Deducciones,
+            #'Deduccion': lineas_deduccion,
+            #'OtrosPagos': lineas_de_otros,
             
         }
+
+        if Deducciones:
+            data['Deducciones'] = Deducciones
+            data['Deduccion'] = lineas_deduccion
+        else:
+            data['Deducciones'] = {}
+        data['OtrosPagos'] = lineas_de_otros
+
 
         comprobante = Element('cfdi:Comprobante',
                             {
