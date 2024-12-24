@@ -66,9 +66,7 @@ class GeneraLiquidaciones(models.TransientModel):
         #Creación de nomina ordinaria
         #payslip_vals = {**payslip_onchange_vals.get('value',{})} #TO copy dict to new dict. 
         
-        structure = self.estructura #self.env['hr.payroll.structure'].search([('name','=','Liquidación - Ordinario')], limit=1)
-        #if structure: 
-        #    payslip_vals['struct_id'] = structure.id
+        structure = self.estructura
         
         contract_id = self.contract_id.id
         #if not contract_id:
@@ -154,11 +152,11 @@ class GeneraLiquidaciones(models.TransientModel):
                 'journal_id': journal.id,
                 #'no_nomina': '1',
                 'fecha_pago' : date_to,
-                'worked_days_line_ids': worked_days,
-                'input_line_ids': inputs,
+                'worked_days_line_ids': worked_days2,
+                'input_line_ids': other_inputs,
                 })
             payslip_vals2.append(values2)
-            payslips2 = Payslip.with_context(tracking_disable=True).create(payslip_vals)
+            payslips2 = Payslip.with_context(tracking_disable=True).create(payslip_vals2)
             payslips2._compute_name()
             for r2 in payslips2:
                 r2.compute_sheet()
@@ -264,7 +262,7 @@ class GeneraLiquidaciones(models.TransientModel):
                 else:
                     ano_buscar = last_day.year
                 for lineas_vac in self.contract_id.tabla_vacaciones:
-                    if lineas_vac.ano == ano_buscar:
+                    if lineas_vac.ano == str(ano_buscar):
                         self.dias_vacaciones += lineas_vac.dias
 
             #fondo de ahorro (si hay)
