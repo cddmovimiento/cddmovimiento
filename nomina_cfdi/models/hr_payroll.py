@@ -967,7 +967,7 @@ class HrPayslip(models.Model):
                 ingreso_no_acumulable = payslip_total_PERG - self.contract_id.wage
 
             percepcion.update({
-               'separacion': [{
+               'Separacion': [{
                         'TotalPagado': payslip_total_SEIN,
                         'NumAñosServicio': self.contract_id.antiguedad_anos,
                         'UltimoSueldoMensOrd': self.contract_id.wage,
