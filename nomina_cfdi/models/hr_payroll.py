@@ -1130,7 +1130,7 @@ class HrPayslip(models.Model):
             diaspagados = work_days
         contrato = 0
         if self.struct_id.name == 'Liquidación - indemnizacion/finiquito':
-            regimen = '13'
+            regimen = '605'
             contrato = '99'
         else:
             regimen = self.employee_id.tipo_regimen
@@ -1314,7 +1314,7 @@ class HrPayslip(models.Model):
             'TotalDeducciones': str(round(self.descuento,2)) or '',
             'TotalOtrosPagos': str(round(payslip_total_TOP,2)),
         })
-        
+
         if self.struct_id.asimilados:
             n12emisor = SubElement(nomina12,'nomina12:Emisor',{
                 #'RegistroPatronal': self.employee_id.registro_patronal or '',
