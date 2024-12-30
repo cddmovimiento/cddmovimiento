@@ -40,7 +40,6 @@ This new module will create 2 new models: incidencias and incapacidades, they wi
         'views/hr_contract_view.xml',
         'views/dias_feriados_view.xml',
         #'wizard/import_loan_views.xml',
-        'views/hr_payroll_structure.xml',
         'wizard/import_logs_view.xml',
         'views/dev_skip_installment.xml',
         'report/report_paperformat.xml',
@@ -57,7 +56,8 @@ This new module will create 2 new models: incidencias and incapacidades, they wi
         'wizard/importar_dias_wizard.xml',
         'report/reporte_isr_imss.xml',
         'report/reporte_de_control.xml',
-        'report/report_payslip_nomina_x_3.xml'
+        'report/report_payslip_nomina_x_3.xml',
+        
     ],
 
 #     'external_dependencies' : {
