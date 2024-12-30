@@ -956,6 +956,7 @@ class HrPayslip(models.Model):
         }
 
         #************ SEPARACION / INDEMNIZACION   ************#
+        separacion ={}
         if payslip_total_SEIN > 0:
             if payslip_total_PERG > self.contract_id.wage:
                 ingreso_acumulable = self.contract_id.wage
@@ -1132,7 +1133,7 @@ class HrPayslip(models.Model):
 
         regimen = self.employee_id.tipo_regimen
         contrato = self.employee_id.tipo_contrato
-        
+
         cur_time = datetime.datetime.now(pytz.timezone(self.env.user.tz))
         cert = self.company_id.l10n_mx_edi_certificate_ids
         if not cert:
