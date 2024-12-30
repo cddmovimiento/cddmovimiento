@@ -1238,9 +1238,10 @@ class HrPayslip(models.Model):
                 'ClaveEntFed': self.employee_id.estado.code or '',   
             },
             'Percepciones': {
-                'TotalSueldos': str(round(payslip_total_PERG + payslip_total_PERE,2)),
+                'TotalSueldos': str(round(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE,2)),
                 'TotalGravado': str(round(payslip_total_PERG,2)),
                 'TotalExento': str(round(payslip_total_PERE,2)),
+                'TotalSeparacionIndemnizacion': str(round(payslip_total_SEIN,2))
             },
             'Percepcion':{
                 'Percepcion': lineas_de_percepcion,
@@ -1332,9 +1333,10 @@ class HrPayslip(models.Model):
             'ClaveEntFed': self.employee_id.estado.code or '',
         })
         n12percepciones = SubElement(nomina12,'nomina12:Percepciones',{
-            'TotalSueldos': str(round(payslip_total_PERG + payslip_total_PERE,2)),
+            'TotalSueldos': str(round(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE,2)),
             'TotalGravado': str(round(payslip_total_PERG,2)),
             'TotalExento': str(round(payslip_total_PERE,2)),
+            'TotalSeparacionIndemnizacion': str(round(payslip_total_SEIN,2)),
         })
 
         for l in lineas_de_percepcion:
@@ -1353,7 +1355,7 @@ class HrPayslip(models.Model):
                 'ImporteGravado': str(r['ImporteGravado']) or '',
                 'ImporteExento': str(r['ImporteExento']) or ''
             })
-            
+
         if payslip_total_SEIN > 0:
             n12sein = SubElement(n12percepciones,'nomina12:SeparacionIndemnizacion',{
                 'TotalPagado': str(round(payslip_total_SEIN,2)),
