@@ -1353,7 +1353,16 @@ class HrPayslip(models.Model):
                 'ImporteGravado': str(r['ImporteGravado']) or '',
                 'ImporteExento': str(r['ImporteExento']) or ''
             })
-        
+            
+        if payslip_total_SEIN > 0:
+            n12sein = SubElement(n12percepciones,'nomina12:SeparacionIndemnizacion',{
+                'TotalPagado': str(round(payslip_total_SEIN,2)),
+                'NumAñosServicio': str(round(self.contract_id.antiguedad_anos,2)),
+                'UltimoSueldoMensOrd': str(round(self.contract_id.wage,2)),
+                'IngresoAcumulable': str(round(ingreso_acumulable,2)),
+                'IngresoNoAcumulable': str(round(ingreso_no_acumulable,2)),
+            })
+
         if total_imp_ret > 0:
             n12deducciones = SubElement(nomina12,'nomina12:Deducciones',{
                 'TotalOtrasDeducciones': str(round(payslip_total_TDED - total_imp_ret,2)) or '',
