@@ -1129,12 +1129,10 @@ class HrPayslip(models.Model):
         else:
             diaspagados = work_days
         contrato = 0
-        if self.struct_id.name == 'Liquidación - indemnizacion/finiquito':
-            regimen = '605'
-            contrato = '99'
-        else:
-            regimen = self.employee_id.tipo_regimen
-            contrato = self.employee_id.tipo_contrato
+
+        regimen = self.employee_id.tipo_regimen
+        contrato = self.employee_id.tipo_contrato
+        
         cur_time = datetime.datetime.now(pytz.timezone(self.env.user.tz))
         cert = self.company_id.l10n_mx_edi_certificate_ids
         if not cert:
