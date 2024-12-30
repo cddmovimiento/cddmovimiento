@@ -966,15 +966,13 @@ class HrPayslip(models.Model):
             else:
                 ingreso_no_acumulable = payslip_total_PERG - self.contract_id.wage
 
-            percepcion.update({
-               'Separacion': [{
-                        'TotalPagado': payslip_total_SEIN,
-                        'NumAñosServicio': self.contract_id.antiguedad_anos,
-                        'UltimoSueldoMensOrd': self.contract_id.wage,
-                        'IngresoAcumulable': ingreso_acumulable,
-                        'IngresoNoAcumulable': ingreso_no_acumulable,
-                }]
-            })
+            separacion = {
+                'TotalPagado': str(round(payslip_total_SEIN,2)),
+                'NumAniosServicio': int(self.contract_id.antiguedad_anos),
+                'UltimoSueldoMensOrd': str(round(self.contract_id.wage,2)),
+                'IngresoAcumulable': str(round(ingreso_acumulable,2)),
+                'IngresoNoAcumulable': str(round(ingreso_no_acumulable,2)),
+            }
 
         #percepcion.update({'SeparacionIndemnizacion': separacion})
         percepcion.update({'lineas_de_percepcion_grabadas': lineas_de_percepcion, 'no_per_grabadas': len(percepciones_grabadas_lines)-percepciones_excentas_lines})
@@ -1246,6 +1244,7 @@ class HrPayslip(models.Model):
             'Percepcion':{
                 'Percepcion': lineas_de_percepcion,
                 'PercepcionExc': lineas_de_percepcion_exentas,
+                'Separacion': separacion,
             },
             #'Deducciones': Deducciones,
             #'Deduccion': lineas_deduccion,
