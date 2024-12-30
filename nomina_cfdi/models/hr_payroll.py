@@ -1213,8 +1213,8 @@ class HrPayslip(models.Model):
                 'TotalOtrosPagos': str(round(payslip_total_TOP,2)),
             },
             'NEmisor': {
-                'RegistroPatronal': self.employee_id.registro_patronal or '',
-                'RfcPatronOrigen' : '', ##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
+                'RegistroPatronal': self.employee_id.registro_patronal if not self.struct_id.asimilados else '',
+                'RfcPatronOrigen' : self.company_id.vat if self.struct_id.asimilados else '', ##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
             },
             'NReceptor': {
                 'Curp': self.employee_id.curp or '',
@@ -1314,7 +1314,17 @@ class HrPayslip(models.Model):
             'TotalDeducciones': str(round(self.descuento,2)) or '',
             'TotalOtrosPagos': str(round(payslip_total_TOP,2)),
         })
-        n12emisor = SubElement(nomina12,'nomina12:Emisor',{'RegistroPatronal': self.employee_id.registro_patronal or ''})
+        
+        if self.struct_id.asimilados:
+            n12emisor = SubElement(nomina12,'nomina12:Emisor',{
+                #'RegistroPatronal': self.employee_id.registro_patronal or '',
+                'RfcPatronOrigen': self.company_id.vat or ''
+                })
+        else:
+           n12emisor = SubElement(nomina12,'nomina12:Emisor',{
+                'RegistroPatronal': self.employee_id.registro_patronal or '',
+                }) 
+
         n12receptor = SubElement(nomina12,'nomina12:Receptor',{
             'Curp': self.employee_id.curp or '',
             'NumSeguridadSocial': self.employee_id.segurosocial or '',
