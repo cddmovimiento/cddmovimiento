@@ -1129,6 +1129,10 @@ class HrPayslip(models.Model):
             diaspagados = 365
         else:
             diaspagados = work_days
+
+        if diaspagados == 0:
+            diaspagados = 0.001
+            
         contrato = 0
 
         regimen = self.employee_id.tipo_regimen
