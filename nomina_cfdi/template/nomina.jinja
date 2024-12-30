@@ -51,8 +51,8 @@
             TotalPercepciones="{{ data['Nomina']['TotalPercepciones'] }}" 
             {% if data['Nomina']['TotalDeducciones']|float > 0 %} TotalDeducciones="{{ data['Nomina']['TotalDeducciones'] }}" {% endif %}
             TotalOtrosPagos="{{ data['Nomina']['TotalOtrosPagos'] }}">
-            <nomina12:Emisor RegistroPatronal="{{ data['NEmisor']['RegistroPatronal'] }}" 
-                             {% if data['NEmisor']['RfcPatronOrigen'] %} RfcPatronOrigen="{{ data['NEmisor']['RfcPatronOrigen'] }}" /> {% endif %}/>
+            <nomina12:Emisor {% if data['NEmisor']['RegistroPatronal'] %} RegistroPatronal="{{ data['NEmisor']['RegistroPatronal'] }}" {% endif %}
+                             {% if data['NEmisor']['RfcPatronOrigen'] %} RfcPatronOrigen="{{ data['NEmisor']['RfcPatronOrigen'] }}" {% endif %}/>
             <nomina12:Receptor 
                 Curp="{{ data['NReceptor']['Curp'] }}" 
                 NumSeguridadSocial="{{ data['NReceptor']['NumSeguridadSocial'] }}" 
