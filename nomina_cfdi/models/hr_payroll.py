@@ -951,7 +951,7 @@ class HrPayslip(models.Model):
                         'TotalJubilacionPensionRetiro': payslip_total_JPRE,
                         'TotalGravado': round(payslip_total_PERG,2),
                         'TotalExento': round(payslip_total_PERE,2),
-                        'TotalSueldos': round(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE,2),
+                        'TotalSueldos': round(abs(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE),2),
                },
         }
 
@@ -1239,7 +1239,7 @@ class HrPayslip(models.Model):
                 'ClaveEntFed': self.employee_id.estado.code or '',   
             },
             'Percepciones': {
-                'TotalSueldos': str(round(abs(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE,2))),
+                'TotalSueldos': str(round(abs(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE),2)),
                 'TotalGravado': str(round(payslip_total_PERG,2)),
                 'TotalExento': str(round(payslip_total_PERE,2)),
                 'TotalSeparacionIndemnizacion': str(round(payslip_total_SEIN,2))
@@ -1345,7 +1345,7 @@ class HrPayslip(models.Model):
             'ClaveEntFed': self.employee_id.estado.code or '',
         })
         n12percepciones = SubElement(nomina12,'nomina12:Percepciones',{
-            'TotalSueldos': str(round(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE,2)),
+            'TotalSueldos': str(round(abs(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE),2)),
             'TotalGravado': str(round(payslip_total_PERG,2)),
             'TotalExento': str(round(payslip_total_PERE,2)),
             'TotalSeparacionIndemnizacion': str(round(payslip_total_SEIN,2)),
