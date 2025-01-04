@@ -1,8 +1,7 @@
 from odoo import fields, models, api, SUPERUSER_ID,_
-from odoo.exceptions import UserError,AccessDenied
+from odoo.exceptions import UserError, AccessDenied
 import logging
 _logger = logging.getLogger(__name__)
-
 
 class res_users(models.Model):
     _inherit = 'res.users'
@@ -19,15 +18,17 @@ class res_users(models.Model):
                     raise UserError(_('Admin user can not be set as a read-only..!'))
         return res
 
-    @api.model
-    def create(self, vals):
-        res = super(res_users, self).create(vals)
-        for access in res.access_management_ids:    
-            if self.env.company in access.company_ids and access.readonly:
-                if res.has_group('base.group_system') or res.has_group('base.group_erp_manager'):
-                    raise UserError(_('Admin user can not be set as a read-only..!'))
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(res_users, self).create(vals_list)
+        for record in self:
+            for access in record.access_management_ids:    
+                if self.env.company in access.company_ids and access.readonly:
+                    if record.has_group('base.group_system') or record.has_group('base.group_erp_manager'):
+                        raise UserError(_('Admin user can not be set as a read-only..!'))
         return res
-    
+
+
     @classmethod
     def _login(cls, db, login, password, user_agent_env):
         res = super(res_users, cls)._login(db, login, password, user_agent_env=user_agent_env)
@@ -36,9 +37,10 @@ class res_users(models.Model):
                 self = api.Environment(cr, SUPERUSER_ID, {})[cls._name] 
                 access_management_obj = self.env['access.management']
 
-                if access_management_obj.search([('user_ids','in',res),('disable_login','=',True)]).id:
+                if access_management_obj.sudo().search([('user_ids','in',res),('disable_login','=',True)]).id:
                     raise AccessDenied()
         except AccessDenied:
             _logger.info("Login failed for db:%s login:%s from ", db, login)
             raise
         return res
+        

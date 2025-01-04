@@ -8,7 +8,7 @@ Create new module for Odoo 15 called nomina_cfdi_extras.
 This new module will create 2 new models: incidencias and incapacidades, they will have a tree view and will be located on Employees view. For both create sequential numbers for each register. Will have only 2 states: draft and done.
     ''',
     'author': 'IT Admin',
-    'version': '15.0.1',
+    'version': '1.7',
     'category': 'Employees',
     'depends': [
         'hr','nomina_cfdi','hr_holidays',
@@ -56,8 +56,7 @@ This new module will create 2 new models: incidencias and incapacidades, they wi
         'wizard/importar_dias_wizard.xml',
         'report/reporte_isr_imss.xml',
         'report/reporte_de_control.xml',
-        'report/report_payslip_nomina_x_3.xml',
-        
+        'report/report_payslip_nomina_x_3.xml'
     ],
 
 #     'external_dependencies' : {

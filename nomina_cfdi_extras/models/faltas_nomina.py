@@ -2,7 +2,6 @@
 from odoo import models, fields, _, api
 import pytz
 from odoo.exceptions import UserError
-from .tzlocal import get_localzone
 from datetime import datetime
 from odoo import tools
 
@@ -10,7 +9,7 @@ class FaltasNomina(models.Model):
     _name = 'faltas.nomina'
     _description = 'FaltasNomina'
 
-    name = fields.Char("Name", required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: _('New'))
+    name = fields.Char("Name", required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
     employee_id = fields.Many2one('hr.employee', string='Empleado')
     fecha_inicio = fields.Date('Fecha inicio')
     fecha_fin = fields.Date('Fecha fin')
@@ -21,12 +20,16 @@ class FaltasNomina(models.Model):
     state = fields.Selection([('draft', 'Borrador'), ('done', 'Hecho'), ('cancel', 'Cancelado')], string='Estado', default='draft')
     dias = fields.Integer("Dias")
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('faltas.nomina') or _('New')
-        result = super(FaltasNomina, self).create(vals)
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Verificar si 'name' tiene el valor por defecto y asignar una secuencia única
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('faltas.nomina') or _('New')
+        
+        # Procesar la creación en lote
+        records = super(FaltasNomina, self).create(vals_list)
+        return records
 
     @api.onchange('fecha_inicio', 'fecha_fin')
     def _get_dias(self):

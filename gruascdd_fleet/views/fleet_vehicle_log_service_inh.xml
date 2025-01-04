@@ -12,7 +12,7 @@
             <xpath expr="sheet//group[2]" position="after">
                 <notebook>
                     <page name="check_list_services" string="Lista de Verificacion">
-                        <field name="check_list_ids" widget="many2many_checkboxes"  domain="[('type_service_id', '=', type_service_id)]"       attrs="{'invisible': [('type_service_id', '=', False)]}"/>
+                        <field name="check_list_ids" widget="many2many_checkboxes"  domain="[('type_service_id', '=', type_service_id)]" invisible="not type_service_id"/>
                     </page>
                 </notebook>
             </xpath>

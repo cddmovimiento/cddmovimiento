@@ -6,7 +6,7 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='action_assign_to_me']" position="after">
+            <xpath expr="//button[@name='action_timer_start']" position="before">
                 <button name="action_report_domain" string="Imprimir bitácora" type="object" class="oe_highlight" icon="fa-print"/>
             </xpath>
         </field>
@@ -25,14 +25,9 @@
                     </strong>
                     <br/>
                     <t t-if="record.partner_id.value">
-                        <span t-if="!record.partner_is_company.raw_value">
-                            <field name="commercial_partner_id"/>
-                        </span>
-                        <span t-else="">
-                            <field name="partner_id"/>
-                        </span>
+                        <field name="partner_id"/>
                     </t>
-                    <t t-else="record.email_from.raw_value"><span><field name="email_from"/></span></t>
+                    <t t-else="record.email_cc.raw_value"><span><field name="email_cc"/></span></t>
                     <t t-if="!record.is_private.raw_value">
                         <span invisible="context.get('default_project_id', False)"><br/><field name="project_id" required="1"/></span>
                     </t>
@@ -45,23 +40,5 @@
         </field>
     </record>
 
-    <record id="industry_fsm_report.project_task_view_kanban_fsm_report" model="ir.ui.view">
-        <field name="arch" type="xml">
-            <xpath expr="//kanban" position="inside">
-                <field name="worksheet_template_id" />
-            </xpath>
-            <xpath expr="//kanban/templates/t/div/div/div/div/t[1]" position="after">
-                <t t-if="record.worksheet_template_id.raw_value">
-                    <br />
-                    <span>
-                        <field name="worksheet_template_id"/>
-                    </span>
-                </t>
-            </xpath>
-        </field>
-    </record>
-
   </data>
 </odoo>
-
-

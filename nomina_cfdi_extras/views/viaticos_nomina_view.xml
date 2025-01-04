@@ -20,9 +20,9 @@
         <field name="arch" type="xml">
         <form string="Vacaciones">
              <header>
-                 <button name="action_validar" string="Generar entregas" type="object" states="draft" class="btn-primary"
+                 <button name="action_validar" string="Generar entregas" type="object" invisible="state != 'draft'" class="btn-primary"
                         confirm="Si tiene algún concepto con CFDI se va a generar y timbrar una nómina con la entrega de los viáticos."/>
-                 <button name="action_cerrar" string="Generar comprobaciones" type="object" states="open" class="btn-primary"
+                 <button name="action_cerrar" string="Generar comprobaciones" type="object" invisible="state != 'open'" class="btn-primary"
                         confirm="Si tiene algún concepto con CFDI se va a generar y timbrar una nómina con la comprobación de los viáticos."/>
                  <field name="state" widget="statusbar" statusbar_visible="draft,open,closed"/>
              </header>
@@ -34,9 +34,9 @@
                  </div>
                  <group>
                      <group>
-                         <field name="fecha" required="1" attrs="{'readonly' : [('state', '!=','draft')]}"/>
-                         <field name="employee_id" required="1" attrs="{'readonly' : [('state', '!=','draft')]}"/>
-                         <field name="description" attrs="{'readonly' : [('state', '!=','draft')]}"/>
+                         <field name="fecha" required="1" readonly="state != 'draft'" />
+                         <field name="employee_id" required="1" readonly="state != 'draft'" />
+                         <field name="description" readonly="state != 'draft'" />
                      </group>
                      <group>
                      	 <field name="entregas" />
@@ -49,7 +49,7 @@
                  		<field name="observaciones" colspan="4" />
                  	</page>
                  	<page name="entregas" string="Entregas" >
-                 		<field name="entregas_ids" colspan="4" attrs="{'readonly' : [('state', '!=','draft')]}">
+                 		<field name="entregas_ids" colspan="4" readonly="state != 'draft'" >
                  			<tree editable="bottom">
                  				<field name="fecha" />
                  				<field name="referencia" required="1"/>
@@ -59,7 +59,7 @@
                  		</field>
                  	</page>
                  	<page name="comprobaciones" string="Comprobaciones">
-                 		<field name="comprobaciones_ids" colspan="4" attrs="{'readonly' : [('state', '!=','open')]}">
+                 		<field name="comprobaciones_ids" colspan="4" readonly="state != 'open'" >
                  			<tree editable="bottom">
                  				<field name="fecha" />
                  				<field name="referencia" required="1"/>

@@ -31,16 +31,11 @@
         <field name="target">new</field>
     </record>
 
-	<menuitem  name="Reportes"
-                id="menu_payroll_payslip_reportes" 
-                parent="hr_payroll.menu_hr_payroll_root" 
-                sequence="15" 
-                groups="hr_payroll.group_hr_payroll_user"/>
 
     <menuitem id="menu_action_wizard_reglas_salariales"
                 name="Reglas salariales"
                 action="action_wizard_reglas_salariales"
-                parent="menu_payroll_payslip_reportes" 
+                parent="hr_payroll.menu_report_payroll" 
                 groups="hr_payroll.group_hr_payroll_user"
                 sequence="10"/>
 

@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 from datetime import datetime
 from odoo.tools.mimetypes import guess_mimetype
-from odoo.exceptions import Warning
+from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, pycompat
 
 import io, os
@@ -45,10 +45,10 @@ class ImportarDiasWizard(models.TransientModel):
     def import_xls_file(self):
         self.ensure_one()
         if not self.import_file:
-            raise Warning("Please select the file first.") 
+            raise UserError("Please select the file first.") 
         p, ext = os.path.splitext(self.file_name)
         if ext[1:] not in ['xls','xlsx']:
-            raise Warning(_("Unsupported file format \"{}\", import only supports XLS, XLSX").format(self.file_name))
+            raise UserError(_("Unsupported file format \"{}\", import only supports XLS, XLSX").format(self.file_name))
         
         ctx = self._context.copy()
         active_id = ctx.get('active_id')
@@ -70,7 +70,7 @@ class ImportarDiasWizard(models.TransientModel):
             if ext in EXTENSIONS:
                 result = getattr(self, '_read_' + ext[1:])(options,import_file)
         if not result and req:
-            raise Warning(_("Unable to load \"{extension}\" file: requires Python module \"{modname}\"").format(extension=file_extension, modname=req))
+            raise UserError(_("Unable to load \"{extension}\" file: requires Python module \"{modname}\"").format(extension=file_extension, modname=req))
         employee_obj = self.env['hr.employee']
         employee_not_found = []
         #payslip_obj = self.env['hr.payslip']
@@ -120,7 +120,7 @@ class ImportarDiasWizard(models.TransientModel):
                     #worked_lines.write({'number_of_days':no_of_days, 'number_of_hours' : no_of_hours})
                 else:
                     if not contract_id:
-                        raise Warning("Please select Contract. No valid contract found for employee %s."%(payslip.employee_id.name))
+                        raise UserError("Please select Contract. No valid contract found for employee %s."%(payslip.employee_id.name))
                     vals.update({'name':description,'code':code,'contract_id':contract_id})
                     worked_days_lines_by_payslip[payslip].append((0,0, vals))
                         

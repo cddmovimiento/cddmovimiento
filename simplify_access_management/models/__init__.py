@@ -16,3 +16,4 @@ from . import hide_view_nodes
 from . import hide_filters_groups
 from . import ir_model
 from . import hide_chatter
+from . import menu_item

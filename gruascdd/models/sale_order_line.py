@@ -11,10 +11,10 @@ class ModelName(models.Model):
         description = '<br/>'.join(sale_line_name_parts[1:])
         return {
             "name": "%s : %s" % (self.order_id.name, self.order_id.pozo),
-            "planned_hours": planned_hours,
+            "allocated_hours": planned_hours,
             "partner_id": self.order_id.partner_id.id,
             "pozo": self.order_id.pozo,
-            "email_from": self.order_id.partner_id.email,
+            #"email_from": self.order_id.partner_id.email,
             "description": description,
             "project_id": project.id,
             #'sale_line_id': self.id,

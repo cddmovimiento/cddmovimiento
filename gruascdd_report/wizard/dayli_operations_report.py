@@ -7,6 +7,7 @@ from datetime import datetime
 
 class AdvancesNotAppliedWizard(models.TransientModel):
     _name = 'dayli.operations.report.wizard'
+    _description = 'Wizard para reporte de operaciones'
 
     start_date = fields.Date(string="Fecha de inicio", required=True)
     end_date = fields.Date(string="Fecha fin", required=True)
@@ -39,6 +40,7 @@ class AdvancesNotAppliedWizard(models.TransientModel):
 
 class AdvancesNotAppliedWizard(models.TransientModel):
     _name = 'operations.report.wizard'
+    _description = 'Wizard para reporte de operaciones'
 
     type_filtered = fields.Selection([
         ('date_create', 'Fecha de creacion'),

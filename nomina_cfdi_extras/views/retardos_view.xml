@@ -19,9 +19,9 @@
         <form string="Retardos">
              
              <header>
-                 <button name="action_validar" string="Validar" type="object" states="draft" class="btn-primary"/>
-                 <button name="action_cancelar" string="Cancelar" type="object" states="done" confirm="¿Seguro que quiere cancelar el registro?"/>
-                 <button name="action_draft" string="Borrador" type="object" states="cancel"/>
+                 <button name="action_validar" string="Validar" type="object" invisible="state != 'draft'" class="btn-primary"/>
+                 <button name="action_cancelar" string="Cancelar" type="object" invisible="state != 'done'" confirm="¿Seguro que quiere cancelar el registro?"/>
+                 <button name="action_draft" string="Borrador" type="object" invisible="state != 'cancel'"/>
                  <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
              </header>
              <sheet>
@@ -32,8 +32,8 @@
                  </div>
                  <group>
                      <group>
-                         <field name="fecha" attrs="{'readonly' : [('state', '!=','draft')], 'required': [('state', '=','draft')]}"/>
-                         <field name="employee_id" attrs="{'readonly' : [('state', '!=','draft')], 'required': [('state', '=','draft')]}"/>
+                         <field name="fecha" readonly="state != 'draft'" required="state == 'draft'"/>
+                         <field name="employee_id" readonly="state != 'draft'" required="state == 'draft'"/>
                      </group>
                  </group>
              </sheet>

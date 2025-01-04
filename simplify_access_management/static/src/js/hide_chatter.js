@@ -1,51 +1,66 @@
-/** @odoo-module **/
+/* @odoo-module */
 
-var FormRenderer = require('web.FormRenderer');
+import { FormRenderer } from "@web/views/form/form_renderer";
+import { ListController } from "@web/views/list/list_controller";
+import { FormController } from "@web/views/form/form_controller";
 import { session } from "@web/session";
-const Session = require("web.Session");
-const { patch } = require("@web/core/utils/patch");
-var rpc = require('web.rpc');
+import { patch } from "@web/core/utils/patch";
+import { jsonrpc } from "@web/core/network/rpc_service";
+import { useService } from "@web/core/utils/hooks";
 
-FormRenderer.include({
-    init: function (parent, data, options) {
-        const self = this;
-        this._super.apply(this, arguments);
+import { onMounted } from "@odoo/owl";
 
-        var hash = window.location.hash.substring(1);
-        hash = JSON.parse('{"' + hash.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value) })
-        rpc.query({
-             model:'access.management',
-             method: 'get_chatter_hide_details',
-             args: [session.user_id, parseInt(hash.cids.charAt(0)), hash.model]
-        }).then(function(result){
-            if(result['hide_send_mail'] == false)
-            {
-                var btn1 = setInterval(function() {
-                   if ($('.o_ChatterTopbar_buttonSendMessage').length) {
-                        $('.o_ChatterTopbar_buttonSendMessage').remove();
-                        clearInterval(btn1);
-                   }
-                }, 50);
-            }
-            if(result['hide_log_notes'] == false)
-            {
-                var btn2 = setInterval(function() {
-                   if ($('.o_ChatterTopbar_buttonLogNote').length) {
-                        $('.o_ChatterTopbar_buttonLogNote').remove();
-                        clearInterval(btn2);
-                   }
-                }, 50);
-            }
-            if(result['hide_schedule_activity'] == false)
-            {
-                var btn3 = setInterval(function() {
-                   if ($('.o_ChatterTopbar_buttonScheduleActivity').length) {
-                        $('.o_ChatterTopbar_buttonScheduleActivity').remove();
-                        clearInterval(btn3);
-                   }
-                }, 50);
-            }
+patch(FormRenderer.prototype, {
+  setup() {
+    super.setup();
+    this.orm = useService("orm");
+    const self = this;
 
-        });
-    },
+    return Promise.resolve(super.setup()).then(function (ev) {
+      var hash = window.location.hash.replace("#", '').split("&");
+      let cids;
+      if(hash.findIndex(ele => ele.includes("cid")) == -1)
+          cids = session.company_id;
+      else {
+          cids = hash.filter(ele => ele.includes("cid"))[0].split("=")[1].split(",");
+          cids = cids.length > 0? parseInt(cids[0]): session.company_id;
+      }
+      let model = hash.filter(ele=>ele.includes("model"))?.[0];
+      model = model? model.split("=")?.[1].split(",")?.[0]: model;
+      if (cids && model) {
+        self.orm
+          .call("access.management", "get_chatter_hide_details", [
+            session.user_id,
+            cids,
+            model,
+          ])
+          .then(function (result) {
+            if (!result["hide_send_mail"]) {
+              var btn1 = setInterval(function () {
+                if ($(".o-mail-Chatter-sendMessage").length) {
+                  $(".o-mail-Chatter-sendMessage").remove();
+                  clearInterval(btn1);
+                }
+              }, 50);
+            }
+            if (!result["hide_log_notes"]) {
+              var btn2 = setInterval(function () {
+                if ($(".o-mail-Chatter-logNote").length) {
+                  $(".o-mail-Chatter-logNote").remove();
+                  clearInterval(btn2);
+                }
+              }, 50);
+            }
+            if (!result["hide_schedule_activity"]) {
+              var btn3 = setInterval(function () {
+                if ($(".o-mail-Chatter-activity").length) {
+                  $(".o-mail-Chatter-activity").remove();
+                  clearInterval(btn3);
+                }
+              }, 50);
+            }
+          });
+      }
+    });
+  },
 });

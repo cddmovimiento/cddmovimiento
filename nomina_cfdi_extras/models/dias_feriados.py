@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, _, api
-from .tzlocal import get_localzone
 from datetime import datetime
 import pytz
 from odoo.exceptions import UserError
@@ -11,18 +10,22 @@ class DiasFeriados(models.Model):
     _name = 'dias.feriados'
     _description = 'DiasFeriados'
 
-    name = fields.Char("Name", required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: _('New'))
+    name = fields.Char("Name", required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
     employee_id = fields.Many2one('hr.employee', string='Empleado')
     fecha = fields.Date('Fecha')
     state = fields.Selection([('draft', 'Borrador'), ('done', 'Hecho'), ('cancel', 'Cancelado')], string='Estado', default='draft')
     tipo = fields.Selection([('doble', 'Doble'), ('triple', 'Triple')], string='Tipo', default='doble')
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('dias.feriados') or _('New')
-        result = super(DiasFeriados, self).create(vals)
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Asignar secuencia si el campo 'name' es 'New'
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('dias.feriados') or _('New')
+        
+        # Procesar la creación en lote
+        records = super(DiasFeriados, self).create(vals_list)
+        return records
 
     def action_validar(self):
         if self.fecha:

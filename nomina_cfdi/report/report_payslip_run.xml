@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+   <data>
+      <record id="report_payslip_run" model="ir.actions.report">
+         <field name="name">Recibo Nomina CFDI</field>
+         <field name="model">hr.payslip.run</field>
+         <field name="report_type">qweb-pdf</field>
+         <field name="report_name">nomina_cfdi.payslip_report_run</field>
+         <field name="report_file">nomina_cfdi.payslip_report_run</field>
+         <field name="binding_model_id" ref="model_hr_payslip_run"/>
+         <field name="binding_type">report</field>
+         <field name="paperformat_id" ref="nomina_cfdi.paperformat_a4_landscape"/>
+      </record>
+      <template id="payslip_report_run">
+         <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+               <t t-foreach="doc.slip_ids" t-as="o">
+                  <t t-call="nomina_cfdi.report_payslip_document" t-lang="es_MX" />
+               </t>
+            </t>
+         </t>
+      </template>
+   </data>
+</odoo>

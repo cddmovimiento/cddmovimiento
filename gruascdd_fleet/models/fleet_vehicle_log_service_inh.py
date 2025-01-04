@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models, tools
-from odoo.exceptions import UserError, ValidationError, Warning
+from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
 import logging
 from datetime import timedelta

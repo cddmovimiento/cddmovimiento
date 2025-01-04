@@ -71,22 +71,22 @@ class employee_loan(models.Model):
                 loan.end_date = end_date.strftime("%Y-%m-%d")
 
     name = fields.Char('Name',default='/',copy=False)
-    state = fields.Selection(loan_state,string='Estado',default='draft', track_visibility='onchange')
-    employee_id = fields.Many2one('hr.employee',string='Empleado',default=_get_employee, required="1")
+    state = fields.Selection(loan_state,string='Estado',default='draft')
+    employee_id = fields.Many2one('hr.employee',string='Empleado',default=_get_employee)
     department_id = fields.Many2one('hr.department',string='Departamento')
 #    hr_manager_id = fields.Many2one('hr.employee',string='Gerente RH')
 #    manager_id = fields.Many2one('hr.employee',string='Gerente de departamento', required="1")
     job_id = fields.Many2one('hr.job',string="Puesto de trabajo")
     date = fields.Date('Fecha',default=fields.Date.today())
-    start_date = fields.Date('Fecha de inicio',default=fields.Date.today(),required="1")
+    start_date = fields.Date('Fecha de inicio',default=fields.Date.today())
     end_date = fields.Date('Fecha de termino')
-    term = fields.Integer('Plazos',required="1")
-    loan_type_id = fields.Many2one('employee.loan.type',string='Tipo',required="1")
-    payment_method = fields.Selection([('by_payslip','Nómina')],string='Método de pago',default='by_payslip', required="1")
-    loan_amount = fields.Float('Monto de deducción',required="1")
+    term = fields.Integer('Plazos')
+    loan_type_id = fields.Many2one('employee.loan.type',string='Tipo')
+    payment_method = fields.Selection([('by_payslip','Nómina')],string='Método de pago',default='by_payslip')
+    loan_amount = fields.Float('Monto de deducción')
     paid_amount = fields.Float('Monto de pago',compute='get_paid_amount')
     remaing_amount = fields.Float('Cantidad restante', compute='get_remaing_amount')
-    installment_amount = fields.Float('Cantidad a plazos',required="1", compute='get_installment_amount')
+    installment_amount = fields.Float('Cantidad a plazos', compute='get_installment_amount')
     loan_url = fields.Char('URL', compute='get_loan_url')
     user_id = fields.Many2one('res.users',default=_get_default_user)
     is_apply_interest = fields.Boolean('Aplicar interés')
@@ -95,9 +95,13 @@ class employee_loan(models.Model):
     interest_amount = fields.Float('Monto de interés', compute='get_interest_amount')
     # ins_interest_amount = fields.Float('Installment Interest Amount', compute='get_install_interest_amount')
     installment_lines = fields.One2many('installment.line','loan_id',string='Cuotas',)
-    notes = fields.Text('Razón', required="1")
+    notes = fields.Text('Razón')
     is_close = fields.Boolean('Esta cerrado',compute='is_ready_to_close')
     move_id = fields.Many2one('account.move',string='Diario')
+    company_id = fields.Many2one(
+        comodel_name='res.company',
+        required=True, index=True,
+        default=lambda self: self.env.company)
 
 #     @api.onchange('loan_type_id') #,'term','interest_rate','interest_type'
 #     def onchange_term_interest_type(self):
@@ -341,7 +345,7 @@ class employee_loan(models.Model):
                'date':self.date,
                'ref':self.name,
                'journal_id':self.loan_type_id.journal_id and self.loan_type_id.journal_id.id,
-               'company_id':self.env.user.company_id.id
+               'company_id':self.company_id.id
            }
            acc_move_id = self.env['account.move'].create(vals)
            lst = []
@@ -381,7 +385,7 @@ class employee_loan(models.Model):
            self.state = 'paid'
 
 
-    def view_journal_entry(self):
+    """ def view_journal_entry(self):
         if self.move_id:
             return {
                 'view_mode': 'form',
@@ -389,17 +393,21 @@ class employee_loan(models.Model):
                 'res_model': 'account.move',
                 'view_mode': 'form',
                 'type': 'ir.actions.act_window',
-            }
+            } """
 
     def action_done_loan(self):
         self.state = 'done'
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', '/') == '/':
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'employee.loan') or '/'
-        return super(employee_loan, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Verifica si 'name' es '/' y genera una secuencia única
+            if vals.get('name', '/') == '/':
+                vals['name'] = self.env['ir.sequence'].next_by_code('employee.loan') or '/'
+        
+        # Procesar la creación en lote
+        records = super(employee_loan, self).create(vals_list)
+        return records
 
     def copy(self, default=None):
         if default is None:

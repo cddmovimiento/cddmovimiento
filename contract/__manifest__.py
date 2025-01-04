@@ -11,7 +11,7 @@
 
 {
     "name": "Recurring - Contracts Management",
-    "version": "15.0.1.6.1",
+    "version": "17.0.1.1.1",
     "category": "Contract Management",
     "license": "AGPL-3",
     "author": "Tecnativa, ACSONE SA/NV, Odoo Community Association (OCA)",
@@ -47,11 +47,9 @@
         "views/contract_portal_templates.xml",
     ],
     "assets": {
-        "web.assets_backend": [
-            "contract/static/src/js/section_and_note_fields_backend.js",
-        ],
         "web.assets_frontend": ["contract/static/src/scss/frontend.scss"],
-        "web.assets_tests": ["contract/static/src/js/contract_portal_tour.js"],
+        "web.assets_tests": ["contract/static/src/js/contract_portal_tour.esm.js"],
     },
     "installable": True,
 }
+

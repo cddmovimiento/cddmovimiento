@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
         <field name="arch" type="xml">
         	<field name="wage" position="attributes">
-          	<attribute name="attrs">{'readonly': [('state','!=','draft')]}</attribute>
+          	<attribute name="readonly">state != 'draft'</attribute>
           </field>
           <xpath expr="//notebook" position="inside">
             <page name="info_cdfi" string="CFDI 3.3">
@@ -15,37 +15,37 @@
                     <field name="periodicidad_pago" />
                     <field name="riesgo_puesto" />
                     <field name="tablas_cfdi_id" />
-                    <field name="sueldo_diario" attrs="{'readonly': [('state','!=','draft')]}" />
-                    <field name="sueldo_hora" attrs="{'readonly': [('state','!=','draft')]}" />
-                    <field name="sueldo_diario_integrado" attrs="{'readonly': [('state','!=','draft')]}" />
-                    <field name="sueldo_base_cotizacion" attrs="{'readonly': [('state','!=','draft')]}" />
+                    <field name="sueldo_diario" readonly="state != 'draft'" />
+                    <field name="sueldo_hora" readonly="state != 'draft'" />
+                    <field name="sueldo_diario_integrado" readonly="state != 'draft'" />
+                    <field name="sueldo_base_cotizacion" readonly="state != 'draft'" />
                  </group>
                  <group>
-                    <field name="tipo_pago" attrs="{'invisible':[('periodicidad_pago','not in',['04', '05'])]}" />
+                    <field name="tipo_pago" invisible="periodicidad_pago not in ['04', '05']" />
                     <field name="tipo_prima_vacacional" />
                     <field name="sept_dia" />
                     <field name="septimo_dia" />
                     <field name="incapa_sept_dia" />
-                    <field name="semana_inglesa" attrs="{'invisible':[('periodicidad_pago','!=','02')]}"/>
+                    <field name="semana_inglesa" invisible="periodicidad_pago != '02'"/>
                     <field name="prima_dominical" />
                  </group>
               </group>
                         <group cols="4">
                             <group string="Percepciones adicionales">
                                 <field name="bono_productividad"/>
-                                <field name="bono_productividad_amount" attrs="{'invisible':[('bono_productividad','=',False)]}" />
+                                <field name="bono_productividad_amount" invisible="not bono_productividad" />
                                 <field name="bono_asistencia"/>
-                                <field name="bono_asistencia_amount" attrs="{'invisible':[('bono_asistencia','=',False)]}"/>
+                                <field name="bono_asistencia_amount" invisible="not bono_asistencia"/>
                                 <field name="bono_puntualidad"/>
-                                <field name="bono_puntualidad_amount" attrs="{'invisible':[('bono_puntualidad','=',False)]}"/>
+                                <field name="bono_puntualidad_amount" invisible="not bono_puntualidad"/>
                                 <field name="fondo_ahorro"/>
-                                <field name="fondo_ahorro_amount" attrs="{'invisible':[('fondo_ahorro','=',False)]}"/>
+                                <field name="fondo_ahorro_amount" invisible="not fondo_ahorro"/>
                                 <field name="vale_despensa"/>
-                                <field name="vale_despensa_amount" attrs="{'invisible':[('vale_despensa','=',False)]}"/>
+                                <field name="vale_despensa_amount" invisible="not vale_despensa"/>
                                 <field name="alimentacion"/>
-                                <field name="alimentacion_amount" attrs="{'invisible':[('alimentacion','=',False)]}"/>
+                                <field name="alimentacion_amount" invisible="not alimentacion"/>
                                 <field name="percepcion_adicional"/>
-                                <field name="percepcion_adicional_amount" attrs="{'invisible':[('percepcion_adicional','=',False)]}"/>
+                                <field name="percepcion_adicional_amount" invisible="not percepcion_adicional"/>
                             </group>
                             <group string="Deducciones adicionales">
                                 <field name="infonavit_fijo"/>
@@ -54,9 +54,9 @@
                                 <field name="pens_alim"/>
                                 <field name="prestamo_fonacot"/>
                                 <field name="caja_ahorro"/>
-                                <field name="caja_ahorro_amount" attrs="{'invisible':[('caja_ahorro','=',False)]}"/>
+                                <field name="caja_ahorro_amount" invisible="not caja_ahorro"/>
                                 <field name="deduccion_adicional"/>
-                                <field name="deduccion_adicional_amount" attrs="{'invisible':[('deduccion_adicional','=',False)]}"/>
+                                <field name="deduccion_adicional_amount" invisible="not deduccion_adicional"/>
                             </group>
                         </group>
             </page>

@@ -43,6 +43,11 @@ class HrPayslipRun(models.Model):
     )
     fecha_pago = fields.Date(string=_('Fecha de pago'), required=True)
 
+    def compute_sheets(self):
+        for r in self:
+            for l in r.slip_ids:
+                l.compute_sheet()
+
     @api.onchange('tipo_configuracion')
     def _set_periodicidad(self):
         if self.tipo_configuracion:
@@ -133,14 +138,8 @@ class HrPayslipRun(models.Model):
                 if self.periodicidad_pago == '02':
                     batch.nominas_mes = 4
                 if self.periodicidad_pago == '04':
-                    batch.nominas_mes = 2
+                    batch.nominas_mes = 2 
 
-    def recalcular_nomina_payslip_batch(self):
-        for batch in self:
-            for l in batch.slip_ids:
-                l.compute_sheet()            
-
-     
     @api.depends('slip_ids.state','slip_ids.nomina_cfdi')
     def _compute_payslip_cgdi_generated(self):
         cfdi_generated = True
@@ -184,24 +183,7 @@ class HrPayslipRun(models.Model):
             mail_message  = self.env['mail.compose.message'].with_context(ctx).create(vals.get('value',{}))
             mail_message.action_send_mail()
         return True        
-    
-    """def enviar_nomina(self):
-        self.ensure_one()
-        ctx = self._context.copy()
-        template = self.env.ref('nomina_cfdi.email_template_payroll', False)
-        for payslip in self.slip_ids: 
-            ctx.update({
-                'default_model': 'hr.payslip',
-                'default_res_id': payslip.id,
-                'default_use_template': bool(template),
-                'default_template_id': template.id,
-                'default_composition_mode': 'email',
-            })
-            vals = self.env['mail.compose.message']._onchange_template_id(template.id, 'email', 'hr.payslip', payslip.id)
-            mail_message  = self.env['mail.compose.message'].with_context(ctx).create(vals.get('value',{}))
-            mail_message.action_send_mail()
-        return True """
-    
+
     def enviar_prenomina(self):
         self.ensure_one()
         ctx = self._context.copy()
@@ -209,7 +191,7 @@ class HrPayslipRun(models.Model):
         for payslip in self.slip_ids: 
             ctx.update({
                 'default_model': 'hr.payslip',
-                'default_res_id': payslip.id,
+                'default_res_ids': [payslip.id],
                 'default_use_template': bool(template),
                 'default_template_id': template.id,
                 'default_composition_mode': 'comment',
@@ -221,7 +203,6 @@ class HrPayslipRun(models.Model):
         return True
 
     def timbrar_nomina(self):
-        #self.ensure_one()
         for payslip in self.slip_ids.filtered(lambda x: not x.nomina_cfdi):
             if payslip.state in ['draft','verify']:
                 payslip.action_payslip_done()
@@ -230,11 +211,6 @@ class HrPayslipRun(models.Model):
     @api.onchange('periodicidad_pago', 'date_start')
     def _get_frecuencia_pago(self):
         values = {}
-        #if self.freq_pago:
-        #    values.update({
-        #        'dias_pagar': self.freq_pago.dias_pago,
-        #        #'imss_dias': self.freq_pago.dias_cotizar,
-        #        })
         if self.date_start and self.dias_pagar:
             fecha_fin = self.date_start + relativedelta(days=self.dias_pagar-1)
             if self.periodicidad_pago == '04':
@@ -269,16 +245,6 @@ class HrPayslipRun(models.Model):
                     'date_start': fecha_inicio
                 }
                 self.update(values)
-
-    def action_draft(self):
-        for r in self:
-            r.write({
-                'state': 'draft'
-            })
-            for l in r.slip_ids:
-                l.write({
-                    'state': 'draft',
-                })
 
 
 class OtrasEntradas(models.Model):

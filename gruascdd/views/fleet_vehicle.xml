@@ -12,7 +12,7 @@
                     icon="fa-clock-o"
                     context="{'xml_id':'fleet_vehicle_hourmeter_action'}"
                     help="show the hourmeter logs for this vehicle"
-                    attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                    invisible="vehicle_type != 'car'">
                     <field name="hourmeter_count" widget="statinfo" string="Horómetro"/>
                 </button>
                 <button name="return_action_to_open_gas"
@@ -21,19 +21,19 @@
                     icon="fa-thermometer-full"
                     context="{'xml_id':'fleet_vehicle_gas_action'}"
                     help="show the diesel logs for this vehicle"
-                    attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                    invisible="vehicle_type != 'car'">
                     <field name="gas_count" widget="statinfo" string="Diesel"/>
                 </button>
             </xpath>
 
             <xpath expr="//field[@name='vin_sn']" position="after">
-                <label for="hourmeter" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}"/>
-                <div class="o_row" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                <label for="hourmeter" invisible="vehicle_type != 'car'"/>
+                <div class="o_row" invisible="vehicle_type != 'car'">
                     <field name="hourmeter" widget="float_time"/>
                     <field name="hourmeter_unit"/>
                 </div>
-                <label for="gas" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}"/>
-                <div class="o_row" attrs="{'invisible': [('vehicle_type', '!=', 'car')]}">
+                <label for="gas" invisible="vehicle_type != 'car'"/>
+                <div class="o_row" invisible="vehicle_type != 'car'">
                     <field name="gas" widget="float"/>
                     <field name="gas_unit"/>
                 </div>

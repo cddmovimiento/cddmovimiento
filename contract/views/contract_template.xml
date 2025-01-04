@@ -12,6 +12,7 @@
                 <group name="group_main">
                     <group name="group_main_left">
                         <field name="contract_type" />
+                        <field name="company_id" invisible="1" />
                         <field name="journal_id" />
                         <field name="pricelist_id" />
                         <field
@@ -26,6 +27,7 @@
                         name="contract_line_ids"
                         widget="section_and_note_one2many"
                         nolabel="1"
+                        colspan="2"
                     >
                         <tree>
                             <control>
@@ -39,26 +41,30 @@
                                     context="{'default_display_type': 'line_note'}"
                                 />
                             </control>
-                            <field name="display_type" invisible="1" />
+                            <field name="display_type" column_invisible="True" />
                             <field name="sequence" widget="handle" />
                             <field name="product_id" />
                             <field name="name" widget="section_and_note_text" />
                             <field name="quantity" />
+                            <field name="is_auto_renew" column_invisible="True" />
                             <field name="uom_id" />
                             <field
                                 name="automatic_price"
-                                attrs="{'column_invisible': [('parent.contract_type','=','purchase')]}"
+                                column_invisible="parent.contract_type == 'purchase' and not is_auto_renew"
                             />
+                            <field name="price_unit" readonly="automatic_price" />
+                            <field name="specific_price" column_invisible="True" />
                             <field
-                                name="price_unit"
-                                attrs="{'readonly': [('automatic_price', '=', True)]}"
+                                name="discount"
+                                groups="product.group_discount_per_so_line"
                             />
-                            <field name="specific_price" invisible="1" />
-                            <field name="discount" groups="base.group_no_one" />
                             <field name="price_subtotal" />
-                            <field name="recurring_rule_type" invisible="1" />
-                            <field name="recurring_interval" invisible="1" />
-                            <field name="recurring_invoicing_type" invisible="1" />
+                            <field name="recurring_rule_type" column_invisible="True" />
+                            <field name="recurring_interval" column_invisible="True" />
+                            <field
+                                name="recurring_invoicing_type"
+                                column_invisible="True"
+                            />
                         </tree>
                     </field>
                 </group>
@@ -66,8 +72,11 @@
                     name="group_legend"
                     string="Legend (for the markers inside invoice lines description)"
                 >
-                    <p> <strong>#START#</strong>: Start date of the invoiced period</p>
-                    <p> <strong>#END#</strong>: End date of the invoiced period</p>
+                    <div colspan="2">
+                        <p> <strong
+                            >#START#</strong>: Start date of the invoiced period</p>
+                        <p> <strong>#END#</strong>: End date of the invoiced period</p>
+                    </div>
                 </group>
             </form>
         </field>

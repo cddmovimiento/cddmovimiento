@@ -40,10 +40,10 @@
                         
                     </group> 
                     <group> 
-                        <field name="state" attrs="{'invisible': [('type_filtered', '!=', 'state')]}"/>
-                        <field name="vehicle_id" attrs="{'invisible': [('type_filtered', '!=', 'uni_eco')]}"  />
-                        <field name="date_filtered_init" attrs="{'invisible': [('type_filtered', 'not in', ['date_create', 'date_ejec'])]}"  />
-                        <field name="date_filtered_end" attrs="{'invisible': [('type_filtered', 'not in', ['date_create', 'date_ejec'])]}"/>
+                        <field name="state" invisible="[('type_filtered', '!=', 'state')]"/>
+                        <field name="vehicle_id" invisible="[('type_filtered', '!=', 'uni_eco')]"/>
+                        <field name="date_filtered_init" invisible= "[('type_filtered', 'not in', ['date_create', 'date_ejec'])]"/>
+                        <field name="date_filtered_end" invisible= "[('type_filtered', 'not in', ['date_create', 'date_ejec'])]"/>
                     </group> 
                     <footer>
                         <button string="Imprimir xlsx" icon="fa-file-o" class="text_uppercase btn btn-primary" name="action_print_report_xlsx" type="object"/>

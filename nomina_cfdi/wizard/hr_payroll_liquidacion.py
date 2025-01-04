@@ -6,7 +6,7 @@ from datetime import datetime
 from datetime import date
 
 import time
-from odoo.exceptions import Warning
+from odoo.exceptions import ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class GeneraLiquidaciones(models.TransientModel):
     def calculo_create(self):
         employee = self.employee_id
         if not employee:
-            raise Warning("Seleccione primero al empleado.")
+            raise ValidationError("Seleccione primero al empleado.")
         payslip_batch_nm = 'Liquidacion ' +employee.name
         date_from = self.fecha_inicio
         date_to = self.fecha_liquidacion
@@ -68,6 +68,7 @@ class GeneraLiquidaciones(models.TransientModel):
         
         structure = self.estructura
         
+        
         contract_id = self.contract_id.id
         #if not contract_id:
         #    contract_id = payslip_vals.get('contract_id')
@@ -77,7 +78,7 @@ class GeneraLiquidaciones(models.TransientModel):
         if not contract_id:
             contract_id = employee.contract_id.id
         if not contract_id:
-            raise Warning("No se encontró contrato para %s en el periodo de tiempo."%(employee.name))
+            raise ValidationError("No se encontró contrato para %s en el periodo de tiempo."%(employee.name))
         
         worked_days = [(5,0,0)]
         pvc_type = self.env['hr.work.entry.type'].search([('code','=','PVC')],limit=1)
@@ -194,10 +195,10 @@ class GeneraLiquidaciones(models.TransientModel):
 
                 if self.sueldo_calculo_monto > tope_prima_antiguedad:
                     _logger.info('mayor')
-                    self.monto_prima_antiguedad = self.antiguedad_anos * 12 * self.tope_prima_monto * 2
+                    self.monto_prima_antiguedad = round(self.antiguedad_anos) * 12 * self.tope_prima_monto * 2
                 else:
                     _logger.info('menor')
-                    self.monto_prima_antiguedad = self.antiguedad_anos * 12 * self.sueldo_calculo_monto
+                    self.monto_prima_antiguedad = round(self.antiguedad_anos) * 12 * self.sueldo_calculo_monto
             else:
                 self.monto_prima_antiguedad = 0
 

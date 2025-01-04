@@ -5,7 +5,6 @@ from odoo import api, fields, models
 
 
 class ContractModification(models.Model):
-
     _name = "contract.modification"
     _description = "Contract Modification"
     _order = "date desc"
@@ -19,7 +18,7 @@ class ContractModification(models.Model):
         ondelete="cascade",
         index=True,
     )
-    sent = fields.Boolean(default=False)
+    sent = fields.Boolean()
 
     @api.model_create_multi
     def create(self, vals_list):

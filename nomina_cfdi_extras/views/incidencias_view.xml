@@ -20,9 +20,9 @@
         <form string="Incidencias">
              
              <header>
-                 <button name="action_validar" string="Validar" type="object" states="draft" class="btn-primary"/>
-                <!-- <button name="action_cancelar" string="Cancelar" type="object" states="done" confirm="¿Seguro que quiere cancelar el registro?"/>-->
-                 <button name="action_draft" string="Borrador" type="object" states="cancel"/>
+                 <button name="action_validar" string="Validar" type="object" invisible="state != 'draft'" class="btn-primary"/>
+                <!-- <button name="action_cancelar" string="Cancelar" type="object" invisible="state != 'done'" confirm="¿Seguro que quiere cancelar el registro?"/>-->
+                 <button name="action_draft" string="Borrador" type="object" invisible="state != 'cancel'"/>
                  <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
              </header>
              <sheet>
@@ -33,18 +33,18 @@
                  </div>
                  <group>
                      <group>
-                         <field name="tipo_de_incidencia" attrs="{'readonly' : [('state', '!=','draft')], 'required': [('state', '=','draft')]}"/>
-                         <field name="employee_id" attrs="{'readonly' : [('state', '!=','draft')], 'required': [('state', '=','draft')]}"/>
-                         <field name="registro_patronal" attrs="{'readonly' : [('state', '!=','draft')], 'invisible': [('tipo_de_incidencia','not in',('Cambio reg. patronal','Reingreso'))] }"/>
-                         <field name="sueldo_mensual" attrs="{'readonly' : [('state', '!=','draft')], 'invisible': [('tipo_de_incidencia','not in',('Cambio salario','Reingreso'))]}"/>
-                         <field name="sueldo_diario" attrs="{'readonly' : [('state', '!=','draft')],'invisible': [('tipo_de_incidencia','not in',('Cambio salario','Reingreso'))]}"/>
-                         <field name="sueldo_por_horas" attrs="{'readonly' : [('state', '!=','draft')],'invisible': [('tipo_de_incidencia','not in',('Cambio salario','Reingreso'))]}"/>
-                         <field name="sueldo_diario_integrado" attrs="{'readonly' : [('state', '!=','draft')], 'invisible': [('tipo_de_incidencia','not in',('Cambio salario','Reingreso'))]}"/>
-                         <field name="sueldo_cotizacion_base" attrs="{'readonly' : [('state', '!=','draft')],'invisible': [('tipo_de_incidencia','not in',('Cambio salario','Reingreso'))]}"/>
+                         <field name="tipo_de_incidencia" readonly="state != 'draft'" required="state == 'draft'"/>
+                         <field name="employee_id" readonly="state != 'draft'" required="state == 'draft'"/>
+                         <field name="registro_patronal" readonly="state != 'draft'" invisible="tipo_de_incidencia not in ('Cambio reg. patronal','Reingreso')"/>
+                         <field name="sueldo_mensual" readonly="state != 'draft'" invisible="tipo_de_incidencia not in ('Cambio salario','Reingreso')"/>
+                         <field name="sueldo_diario" readonly="state != 'draft'" invisible="tipo_de_incidencia not in ('Cambio salario','Reingreso')"/>
+                         <field name="sueldo_por_horas" readonly="state != 'draft'" invisible="tipo_de_incidencia not in ('Cambio salario','Reingreso')"/>
+                         <field name="sueldo_diario_integrado" readonly="state != 'draft'" invisible="tipo_de_incidencia not in ('Cambio salario','Reingreso')"/>
+                         <field name="sueldo_cotizacion_base" readonly="state != 'draft'" invisible="tipo_de_incidencia not in ('Cambio salario','Reingreso')"/>
                      </group>
                      <group>
-                         <field name="fecha" attrs="{'readonly' : [('state', '!=','draft')], 'required': [('state', '=','draft')]}"/>
-                         <field name="tipo_de_baja" attrs="{'readonly' : [('state', '!=','draft')],'invisible': [('tipo_de_incidencia','not in',('Baja'))]}"/>
+                         <field name="fecha" readonly="state != 'draft'" required="state == 'draft'"/>
+                         <field name="tipo_de_baja" readonly="state != 'draft'" invisible="tipo_de_incidencia != 'Baja'"/>
                      </group>
                  </group>
              </sheet>

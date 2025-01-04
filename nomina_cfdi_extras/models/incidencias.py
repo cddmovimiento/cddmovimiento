@@ -7,7 +7,7 @@ class IncidenciasNomina(models.Model):
     _name = 'incidencias.nomina'
     _description = 'IncidenciasNomina'
 
-    name = fields.Char("Name", required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: _('New'))
+    name = fields.Char("Name", required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
     tipo_de_incidencia = fields.Selection([('Cambio salario', 'Cambio salario'), ('Reingreso', 'Reingreso'), ('Baja','Baja'), ('Cambio reg. patronal','Cambio reg. patronal')], string='Tipo de incidencia')
     employee_id = fields.Many2one('hr.employee', string='Empleado')
     fecha = fields.Date('Fecha')
@@ -103,12 +103,16 @@ class IncidenciasNomina(models.Model):
             sueldo_diario_integrado = 0
         return sueldo_diario_integrado
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('incidencias.nomina') or _('New')
-        result = super(IncidenciasNomina, self).create(vals)
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Asignar una secuencia única si 'name' tiene el valor predeterminado
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('incidencias.nomina') or _('New')
+        
+        # Crear los registros en lote
+        records = super(IncidenciasNomina, self).create(vals_list)
+        return records
 
     def action_validar(self):
         employee = self.employee_id

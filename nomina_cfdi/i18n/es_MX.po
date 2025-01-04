@@ -18,40 +18,6 @@ msgstr ""
 "X-Generator: Poedit 3.0.1\n"
 
 #. module: nomina_cfdi
-#: model:mail.template,body_html:nomina_cfdi.email_template_payroll
-msgid ""
-"\n"
-"<p>Dear ${object.employee_id.name}\n"
-"\n"
-"\n"
-"<p>You can reply to this email if you have any questions.</p>\n"
-"<p>Thank you,</p>\n"
-"\n"
-"<p style=\"color:#eeeeee;\">\n"
-"% if object.company_id and object.company_id.signature:\n"
-"    ${object.company_id.signature | safe}\n"
-"% endif\n"
-"</p>\n"
-msgstr ""
-"\n"
-"<p>Estimado ${object.employee_id.name}\n"
-"\n"
-"\n"
-"<p>Puede responder a este correo electrónico si tiene alguna pregunta.</p>\n"
-"<p>Gracias,</p>\n"
-"\n"
-"<p style=\"color:#eeeeee;\">\n"
-"% if object.company_id and object.company_id.signature:\n"
-"    ${object.company_id.signature | safe}\n"
-"% endif\n"
-"</p>\n"
-
-#. module: nomina_cfdi
-#: model:mail.template,report_name:nomina_cfdi.email_template_payroll
-msgid "${object.name.replace('/', '_') + '.pdf'}"
-msgstr ""
-
-#. module: nomina_cfdi
 #: code:addons/nomina_cfdi/models/tablas_nomina.py:0
 #: model:ir.model.fields,field_description:nomina_cfdi.field_tablas_cfdi__funcion_dias
 #, python-format
@@ -2692,11 +2658,6 @@ msgid ""
 "                    percepciones y las retenciones descritas, por lo que "
 "certifico que no se me adeuda cantidad alguna\n"
 "                    por ningún concepto. <br/> <br/>"
-msgstr ""
-
-#. module: nomina_cfdi
-#: model:mail.template,subject:nomina_cfdi.email_template_payroll
-msgid "Ref: ${object.name or 'n/a' }"
 msgstr ""
 
 #. module: nomina_cfdi

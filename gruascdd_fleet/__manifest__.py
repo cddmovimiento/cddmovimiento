@@ -5,7 +5,7 @@
     "author": "Eligio Chan",
     "website": "https://ezzquad.com",
     "category": "Sale",
-    "version": "2.0",
+    "version": "2.0.1",
     "license": "OPL-1",
 
     # any module necessary for this one to work correctly

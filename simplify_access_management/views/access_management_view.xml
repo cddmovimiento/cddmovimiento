@@ -4,27 +4,21 @@
 
         <record id="access_management_form_view_ah" model="ir.ui.view">
             <field name="name">access_management_form_view_ah</field>
-            <field name="groups_id" eval="[(4, ref('group_access_management_spt'))]"/>
+            <field name="groups_id" eval="[(4, ref('group_access_management_bits'))]"/>
             <field name="model">access.management</field>
             <field name="arch" type="xml">
-                <form>
+                <form context="{'buypass_access':True}">
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <widget name="web_ribbon" title="Deactivated" bg_color="bg-danger"
-                                    attrs="{'invisible': [('active','=',True)]}"/>
                             <field name="active" invisible="1"/>
-                            <button attrs="{'invisible':[('active','=',False)]}" class="oe_stat_button"
-                                    name="toggle_active_value"
-                                    type="object"
-                                    icon="fa-stop">
+                            <button invisible="active == False" class="oe_stat_button"
+                                    name="toggle_active_value" type="object" icon="fa-stop">
                                 <div class="o_stat_info o_form_field">
                                     <span style="font-weight: bold;" class="text-danger">Deactivate Rule</span>
                                 </div>
                             </button>
-                            <button attrs="{'invisible':[('active','=',True)]}" class="oe_stat_button"
-                                    name="toggle_active_value"
-                                    type="object"
-                                    icon="fa-play">
+                            <button invisible="active == True" class="oe_stat_button"
+                                    name="toggle_active_value" type="object" icon="fa-play">
                                 <div class="o_stat_info o_form_field">
                                     <span style="font-weight: bold;" class="text-success">Activate Rule</span>
                                 </div>
@@ -40,9 +34,9 @@
                             <group>
                                 <field name="name" default_focus="1" required='1'/>
                                 <field name="readonly"/>
+                                <field name="is_apply_on_without_company"/>
                                 <field name="company_ids" options="{'no_create': True}" widget="many2many_tags"
-                                       groups="base.group_multi_company"/>
-                                <field name="self_model_ids" widget="many2many_tags" invisible="1"/>
+                                       groups="base.group_multi_company" invisible="is_apply_on_without_company != False"/>
                                 <field name="total_rules" invisible="1"/>
                             </group>
                             <group>
@@ -64,7 +58,7 @@
                         <notebook>
                             <page string='Hide Menu'>
                                 <field name="self_module_menu_ids" widget="many2many_tags" invisible="1"/>
-                                <field name='hide_menu_ids' domain="[('id','not in',self_module_menu_ids)]"/>
+                                <field name='hide_menu_ids' domain="[('menu_id','not in',self_module_menu_ids)]"/>
                                 <p role="alert"
                                    class="fa fa-info-circle  alert alert-info alert-dismissible rounded-0 fade show d-print-none css_editable_mode_hidden"
                                    style="font-size: 15px;letter-spacing: 1px;">The menu or submenu added on above list
@@ -84,7 +78,7 @@
                                         <field name="model_id" context="{'is_access_rights': True}"
                                                options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"
                                                width='13' required='1'
-                                               domain="[('id','not in',parent.self_model_ids)]"/>
+                                               domain="[('model','not in',['access.management', 'access.domain.ah', 'action.data', 'hide.field', 'hide.view.nodes', 'store.model.nodes', 'remove.action', 'view.data'])]"/>
                                         <field name="report_action_ids" width='13' widget="many2many_tags"
                                                options="{'no_create': True}"/>
                                         <field name="server_action_ids" width='13' widget="many2many_tags"
@@ -97,10 +91,11 @@
                                         <field name="restrict_archive_unarchive" width='10'/>
                                         <field name="restrict_duplicate" width='10'/>
                                         <!--                                        <field name="restrict_chatter" width='10' attrs="{'column_invisible' : [('parent.hide_chatter','=',True)]}"/>-->
-                                        <field name="readonly" invisible="1"
-                                               attrs="{'column_invisible' : [('parent.readonly','=',True)]}"/>
+                                        <!-- <field name="readonly" invisible="1"
+                                               column_invisible="parent.readonly == True"/> -->
                                         <field name="restrict_import" width='10'/>
                                         <field name="restrict_export" width='10'/>
+                                        <field name="restrict_spreadsheet" width='10'/>
                                     </tree>
                                 </field>
                                 <p role="alert"
@@ -130,15 +125,18 @@
                                         <!-- <field name="model_id" options="{'no_create': True}" domain="[('id','not in',parent.self_model_ids),('abstract','=',False)]" /> -->
                                         <field name="model_id" context="{'is_access_rights': True}"
                                                options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"
-                                               required='1' domain="[('id','not in',parent.self_model_ids)]"/>
+                                               required='1' 
+                                               domain="[('model','not in',['access.management', 'access.domain.ah', 'action.data', 'hide.field', 'hide.view.nodes', 'store.model.nodes', 'remove.action', 'view.data'])]"
+                                               width='10'/>
                                         <field name="field_id" context="{'is_access_rights': True}"
                                                options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"
-                                               widget='many2many_tags' domain="[('model_id','=',model_id)]"/>
-                                        <field name="invisible" width='1'/>
-                                        <field name="readonly" width='1'
-                                               attrs="{'column_invisible' : [('parent.readonly','=',True)]}"/>
-                                        <field name="required" width='1'/>
-                                        <field name="external_link" width='1'/>
+                                               widget='many2many_tags' domain="[('model_id','=',model_id)]"
+                                               width='10'/>
+                                        <field name="invisible" width='10'/>
+                                        <field name="readonly" width='10' column_invisible="parent.readonly == True "/>
+                                        <field name="required" width='10'/>
+                                        <field name="external_link" width='10'/>
+                                        
                                     </tree>
                                 </field>
                                 <p role="alert"
@@ -163,7 +161,7 @@
                                                 <group>
                                                     <field name="model_id" context="{'is_access_rights': True}"
                                                            options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"
-                                                           domain="[('id','not in',parent.self_model_ids),('abstract','=',False)]"/>
+                                                           domain="[('model','not in',['access.management', 'access.domain.ah', 'action.data', 'hide.field', 'hide.view.nodes', 'store.model.nodes', 'remove.action', 'view.data']),('abstract','=',False)]"/>
                                                 </group>
                                             </group>
                                             <group>
@@ -177,24 +175,23 @@
                                                 </group>
                                             </group>
                                             <group>
-                                                <field name="apply_domain"
-                                                       attrs="{'invisible' : [('read_right','=',False)]}"/>
-                                                <field name="model_name" invisible="1"
-                                                       attrs="{'invisible' : ['|',('apply_domain','!=',True),('read_right','=',False)]}"/>
+                                                <field name="apply_domain" invisible="read_right == False"/>
+                                                <field name="model_name"
+                                                       invisible="apply_domain != True  or read_right == False"/>
                                                 <field name="domain" widget="terabits_domain"
                                                        options="{'model': 'model_name'}"
-                                                       attrs="{'invisible' : ['|',('apply_domain','!=',True),('read_right','=',False)]}"/>
+                                                       invisible="apply_domain != True  or read_right == False"/>
                                             </group>
 
                                         </sheet>
                                     </form>
                                     <tree>
-                                        <field name="model_id"/>
-                                        <field name="domain"/>
-                                        <field name="read_right"/>
-                                        <field name="create_right"/>
-                                        <field name="write_right"/>
-                                        <field name="delete_right"/>
+                                        <field name="model_id" width='10'/>
+                                        <field name="domain" width='10'/>
+                                        <field name="read_right" width='10'/>
+                                        <field name="create_right" width='10'/>
+                                        <field name="write_right" width='10'/>
+                                        <field name="delete_right" width='10'/>
                                     </tree>
                                 </field>
                                 <p role="alert"
@@ -227,9 +224,10 @@
                                 <field name='hide_view_nodes_ids'>
                                     <tree editable="bottom">
                                         <field name="model_id" context="{'is_access_rights': True}"
-                                               options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"
-                                               domain="[('id','not in',parent.self_model_ids)]"/>
-                                        <field name="model_name" invisible="1"/>
+                                               options="{'no_open': True, 'nos_create': True, 'no_create_edit': True}"
+                                               domain="[('model','not in',['access.management', 'access.domain.ah', 'action.data', 'hide.field', 'hide.view.nodes', 'store.model.nodes', 'remove.action', 'view.data'])]"/>
+                                        <!-- <field name="model_name" invisible="1"/> -->
+                                        <!-- <field name="model_name"/> -->
                                         <field name="btn_store_model_nodes_ids" widget="many2many_tags"
                                                domain="[('model_id','=',model_id),('node_option','=','button')]"
                                                options="{'no_create': True}"/>
@@ -265,14 +263,15 @@
                                     <tree editable="bottom">
                                         <field name="model_id" context="{'is_access_rights': True}"
                                                options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"
-                                               domain="[('id','not in',parent.self_model_ids)]"/>
-                                        <field name="model_name" invisible="1"/>
+                                               domain="[('model','not in',['access.management', 'access.domain.ah', 'action.data', 'hide.field', 'hide.view.nodes', 'store.model.nodes', 'remove.action', 'view.data'])]"
+                                               width='10'/>
+                                        <!-- <field name="model_name" invisible="1"/> -->
                                         <field name="filters_store_model_nodes_ids" widget="many2many_tags"
                                                domain="[('model_id','=',model_id),('node_option','=','filter')]"
-                                               options="{'no_create': True}"/>
+                                               options="{'no_create': True}" width='10'/>
                                         <field name="groups_store_model_nodes_ids" widget="many2many_tags"
                                                domain="[('model_id','=',model_id),('node_option','=','group')]"
-                                               options="{'no_create': True}"/>
+                                               options="{'no_create': True}" width='10'/>
                                     </tree>
                                 </field>
                                 <p role="alert"
@@ -292,12 +291,13 @@
                                     <tree editable="bottom">
                                         <field name="model_id" context="{'is_access_rights': True}"
                                                options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"
-                                               width="20" domain="[('id','not in',parent.self_model_ids)]"
+                                               width="20" domain="[('model','not in',['access.management', 'access.domain.ah', 'action.data', 'hide.field', 'hide.view.nodes', 'store.model.nodes', 'remove.action', 'view.data'])]"
                                                required="1"/>
                                         <field name="hide_chatter" width="20"/>
                                         <field name="hide_send_mail" width="20"/>
                                         <field name="hide_log_notes" width="20"/>
                                         <field name="hide_schedule_activity" width="20"/>
+
                                     </tree>
                                 </field>
                                 <p role="alert"
@@ -320,10 +320,13 @@
                                     <group string="Import &amp; Export">
                                         <field name="hide_import"/>
                                         <field name="hide_export"/>
+                                        <field name="hide_spreadsheet"/>
+                                        <field name="hide_add_property"/>
                                     </group>
+
                                 </group>
-                                  <group string="Others">
-                                    <field name="disable_login" />
+                                <group string="Others">
+                                    <field name="disable_login"/>
 
                                 </group>
                                 <p role="alert"
@@ -359,6 +362,10 @@
                     <group expand="0" string="Group By">
                         <filter string="Created By" name="created_by" domain="[]" context="{'group_by': 'create_uid'}"/>
                     </group>
+                    <searchpanel>
+                        <field name="user_ids" select="multi" string="Users" enable_counters="1"/>
+                        <field name="company_ids" select="multi" string="Companies" enable_counters="1"/>
+                    </searchpanel>
                 </search>
             </field>
         </record>
@@ -366,7 +373,7 @@
 
         <record id="access_management_tree_view_ah" model="ir.ui.view">
             <field name="name">access_management_tree_view_ah</field>
-            <field name="groups_id" eval="[(4, ref('group_access_management_spt'))]"/>
+            <field name="groups_id" eval="[(4, ref('group_access_management_bits'))]"/>
             <field name="model">access.management</field>
             <field name="arch" type="xml">
                 <tree decoration-muted="(not active)">
@@ -389,7 +396,7 @@
         </record>
 
         <menuitem id="main_menu_simplify_access_management" name="Access Studio" action="action_access_management_ah"
-                  groups="group_access_management_spt"
+                  groups="group_access_management_bits"
                   web_icon="simplify_access_management,static/description/icon.png"/>
 
     </data>

@@ -8,10 +8,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 
-from odoo import api, fields, models
+from markupsafe import Markup
+
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
-from odoo.tests import Form
 from odoo.tools.translate import _
 
 _logger = logging.getLogger(__name__)
@@ -157,7 +158,7 @@ class ContractContract(models.Model):
             ).write(vals)
             self._modification_mail_send()
         else:
-            res = super(ContractContract, self).write(vals)
+            res = super().write(vals)
         return res
 
     @api.model
@@ -187,19 +188,21 @@ class ContractContract(models.Model):
             )
             if modification_ids_not_sent:
                 if not self.env.context.get("skip_modification_mail"):
-                    record.with_context(
-                        default_subtype_id=self.env.ref(
-                            "contract.mail_message_subtype_contract_modification"
-                        ).id,
-                    ).message_post_with_template(
-                        self.env.ref("contract.mail_template_contract_modification").id,
-                        email_layout_xmlid="contract.template_contract_modification",
+                    subtype_id = self.env["ir.model.data"]._xmlid_to_res_id(
+                        "contract.mail_message_subtype_contract_modification"
+                    )
+                    template_id = self.env.ref(
+                        "contract.mail_template_contract_modification"
+                    )
+                    record.message_post_with_source(
+                        template_id,
+                        subtype_id=subtype_id,
                     )
                 modification_ids_not_sent.write({"sent": True})
 
     def _compute_access_url(self):
         for record in self:
-            record.access_url = "/my/contracts/{}".format(record.id)
+            record.access_url = f"/my/contracts/{record.id}"
 
     def action_preview(self):
         """Invoked when 'Preview' button in contract form view is clicked."""
@@ -311,18 +314,18 @@ class ContractContract(models.Model):
             if date_end and all(date_end):
                 contract.date_end = max(date_end)
 
-    # pylint: disable=missing-return
     @api.depends(
         "contract_line_ids.recurring_next_date",
         "contract_line_ids.is_canceled",
     )
+    # pylint: disable=missing-return
     def _compute_recurring_next_date(self):
         for contract in self:
             recurring_next_date = contract.contract_line_ids.filtered(
-                lambda l: (
-                    l.recurring_next_date
-                    and not l.is_canceled
-                    and (not l.display_type or l.is_recurring_note)
+                lambda line: (
+                    line.recurring_next_date
+                    and not line.is_canceled
+                    and (not line.display_type or line.is_recurring_note)
                 )
             ).mapped("recurring_next_date")
             # we give priority to computation from date_start if modified
@@ -381,7 +384,7 @@ class ContractContract(models.Model):
         self.pricelist_id = partner.property_product_pricelist.id
         self.fiscal_position_id = partner.env[
             "account.fiscal.position"
-        ].get_fiscal_position(partner.id)
+        ]._get_fiscal_position(partner)
         if self.contract_type == "purchase":
             self.payment_term_id = partner.property_supplier_payment_term_id
         else:
@@ -403,10 +406,9 @@ class ContractContract(models.Model):
         return new_lines
 
     def _prepare_invoice(self, date_invoice, journal=None):
-        """Prepare in a Form the values for the generated invoice record.
+        """Prepare the values for the generated invoice record.
 
-        :return: A tuple with the vals dictionary and the Form with the
-          preloaded values for being used in lines.
+        :return: A vals dictionary
         """
         self.ensure_one()
         if not journal:
@@ -432,33 +434,39 @@ class ContractContract(models.Model):
                     "company": self.company_id.name or "",
                 }
             )
-        invoice_type = "out_invoice"
-        if self.contract_type == "purchase":
-            invoice_type = "in_invoice"
-        move_form = Form(
-            self.env["account.move"]
-            .with_company(self.company_id)
-            .with_context(default_move_type=invoice_type)
+        invoice_type = (
+            "in_invoice" if self.contract_type == "purchase" else "out_invoice"
         )
-        move_form.partner_id = self.invoice_partner_id
+        vals = {
+            "move_type": invoice_type,
+            "company_id": self.company_id.id,
+            "partner_id": self.invoice_partner_id.id,
+            "ref": self.code,
+            "currency_id": self.currency_id.id,
+            "invoice_date": date_invoice,
+            "journal_id": journal.id,
+            "invoice_origin": self.name,
+            "invoice_line_ids": [],
+        }
         if self.payment_term_id:
-            move_form.invoice_payment_term_id = self.payment_term_id
+            vals.update(
+                {
+                    "invoice_payment_term_id": self.payment_term_id.id,
+                }
+            )
         if self.fiscal_position_id:
-            move_form.fiscal_position_id = self.fiscal_position_id
+            vals.update(
+                {
+                    "fiscal_position_id": self.fiscal_position_id.id,
+                }
+            )
         if invoice_type == "out_invoice" and self.user_id:
-            move_form.invoice_user_id = self.user_id
-        invoice_vals = move_form._values_to_save(all_fields=True)
-        invoice_vals.update(
-            {
-                "ref": self.code,
-                "company_id": self.company_id.id,
-                "currency_id": self.currency_id.id,
-                "invoice_date": date_invoice,
-                "journal_id": journal.id,
-                "invoice_origin": self.name,
-            }
-        )
-        return invoice_vals, move_form
+            vals.update(
+                {
+                    "invoice_user_id": self.user_id.id,
+                }
+            )
+        return vals
 
     def action_contract_send(self):
         self.ensure_one()
@@ -466,7 +474,7 @@ class ContractContract(models.Model):
         compose_form = self.env.ref("mail.email_compose_message_wizard_form")
         ctx = dict(
             default_model="contract.contract",
-            default_res_id=self.id,
+            default_res_ids=self.ids,
             default_use_template=bool(template),
             default_template_id=template and template.id or False,
             default_composition_mode="comment",
@@ -510,6 +518,7 @@ class ContractContract(models.Model):
                 not contract_line.is_canceled
                 and contract_line.recurring_next_date
                 and contract_line.recurring_next_date <= date_ref
+                and contract_line.next_period_date_start
             )
 
         lines2invoice = previous = self.env["contract.line"]
@@ -554,19 +563,22 @@ class ContractContract(models.Model):
             contract_lines = contract._get_lines_to_invoice(date_ref)
             if not contract_lines:
                 continue
-            invoice_vals, move_form = contract._prepare_invoice(date_ref)
+            invoice_vals = contract._prepare_invoice(date_ref)
             invoice_vals["invoice_line_ids"] = []
             for line in contract_lines:
-                invoice_line_vals = line._prepare_invoice_line(move_form=move_form)
+                invoice_line_vals = line._prepare_invoice_line()
                 if invoice_line_vals:
                     # Allow extension modules to return an empty dictionary for
                     # nullifying line. We should then cleanup certain values.
-                    del invoice_line_vals["company_id"]
-                    del invoice_line_vals["company_currency_id"]
-                    invoice_vals["invoice_line_ids"].append((0, 0, invoice_line_vals))
+                    if "company_id" in invoice_line_vals:
+                        del invoice_line_vals["company_id"]
+                    if "company_currency_id" in invoice_line_vals:
+                        del invoice_line_vals["company_currency_id"]
+                    invoice_vals["invoice_line_ids"].append(
+                        Command.create(invoice_line_vals)
+                    )
             invoices_values.append(invoice_vals)
             # Force the recomputation of journal items
-            del invoice_vals["line_ids"]
             contract_lines._update_recurring_next_date()
         return invoices_values
 
@@ -575,23 +587,13 @@ class ContractContract(models.Model):
         This method triggers the creation of the next invoices of the contracts
         even if their next invoicing date is in the future.
         """
-        invoice = self._recurring_create_invoice()
-        if invoice:
-            self.message_post(
-                body=_(
-                    "Contract manually invoiced: "
-                    "<a"
-                    '    href="#" data-oe-model="%(model_name)s" '
-                    '    data-oe-id="%(rec_id)s"'
-                    ">Invoice"
-                    "</a>"
-                )
-                % {
-                    "model_name": invoice._name,
-                    "rec_id": invoice.id,
-                }
-            )
-        return invoice
+        invoices = self._recurring_create_invoice()
+        for invoice in invoices:
+            body = Markup(_("Contract manually invoiced: %(invoice_link)s")) % {
+                "invoice_link": invoice._get_html_link(title=invoice.name)
+            }
+            self.message_post(body=body)
+        return invoices
 
     @api.model
     def _invoice_followers(self, invoices):
@@ -611,19 +613,11 @@ class ContractContract(models.Model):
     def _add_contract_origin(self, invoices):
         for item in self:
             for move in invoices & item._get_related_invoices():
-                move.message_post(
-                    body=(
-                        _(
-                            (
-                                "%(msg)s by contract <a href=# data-oe-model=contract.contract"
-                                " data-oe-id=%(contract_id)d>%(contract)s</a>."
-                            ),
-                            msg=move._creation_message(),
-                            contract_id=item.id,
-                            contract=item.display_name,
-                        )
-                    )
-                )
+                body = Markup(_("%(msg)s by contract: %(contract_link)s")) % {
+                    "msg": move._creation_message(),
+                    "contract_link": move._get_html_link(title=item.display_name),
+                }
+                move.message_post(body=body)
 
     def _recurring_create_invoice(self, date_ref=False):
         invoices_values = self._prepare_recurring_invoices_values(date_ref)
@@ -665,8 +659,11 @@ class ContractContract(models.Model):
         # Invoice by companies, so assignation emails get correct context
         for company in companies:
             contracts_to_invoice = contracts.filtered(
-                lambda c: c.company_id == company
-                and (not c.date_end or c.recurring_next_date <= c.date_end)
+                lambda contract, comp=company: contract.company_id == comp
+                and (
+                    not contract.date_end
+                    or contract.recurring_next_date <= contract.date_end
+                )
             ).with_company(company)
             _recurring_create_func(contracts_to_invoice, date_ref)
         return True

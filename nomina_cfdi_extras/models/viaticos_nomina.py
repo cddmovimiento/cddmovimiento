@@ -35,12 +35,16 @@ class ViaticosNomina(models.Model):
     entregas_ids = fields.One2many('entregas.viaticos.nomina', 'viaticos_id', 'Entregas')
     comprobaciones_ids = fields.One2many('comprobaciones.viaticos.nomina', 'viaticos_id', 'Comprobaciones')
     
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = \
-                self.env['ir.sequence'].next_by_code('viaticos.nomina') or _('New')
-        return super(ViaticosNomina, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Verificar si 'name' tiene el valor por defecto y asignar una secuencia única
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('viaticos.nomina') or _('New')
+        
+        # Procesar la creación en lote
+        records = super(ViaticosNomina, self).create(vals_list)
+        return records
     
     def action_validar(self):
         payslip_obj = self.env['hr.payslip']

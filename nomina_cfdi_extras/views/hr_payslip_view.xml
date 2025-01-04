@@ -8,10 +8,10 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_payslip_cancel']"
                    position="attributes">
-                <attribute name="states">draft,hr_check,confirm,verify,done</attribute>
+                <attribute name="invisible">state not in ('draft','hr_check','confirm','verify','done')</attribute>
             </xpath>
             <field name="credit_note" position="after">
-                <field name="refunded_id" attrs="{'invisible': [('refunded_id', '=', False)]}"/>
+                <field name="refunded_id" invisible="not refunded_id"/>
             </field>
         </field>
     </record>
@@ -23,8 +23,8 @@
          <field name="arch" type="xml">
              <button name="action_draft" position="after">
                  <field name="show_cancelar_button" invisible="1" />
-                 <button string="Cancelar CFDI" name="action_cancelar_cfdi" type="object" attrs="{'invisible':[('show_cancelar_button','!=',True)]}" class="oe_highlight"/>
-                 <button string="Cancelar nómina" name="action_cancelar_nomina" type="object" attrs="{'invisible':[('show_cancelar_button','!=',True)]}" class="oe_highlight"/>
+                 <button string="Cancelar CFDI" name="action_cancelar_cfdi" type="object" invisible="not show_cancelar_button" class="oe_highlight"/>
+                 <button string="Cancelar nómina" name="action_cancelar_nomina" type="object" invisible="not show_cancelar_button" class="oe_highlight"/>
              </button>
          </field>
     </record> 

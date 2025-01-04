@@ -11,7 +11,7 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
          <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
          <field name="arch" type="xml">
             <xpath expr="//field[@name='credit_note']" position="after">
-                <field name="installment_ids" widget="many2many_tags" attrs="{'readonly':[('state','!=','draft')]}"/>
+                <field name="installment_ids" widget="many2many_tags" readonly="state != 'draft'" />
                 <field name="installment_amount" invisible="1"/>
                 <field name="installment_int" invisible="1"/>
             </xpath>

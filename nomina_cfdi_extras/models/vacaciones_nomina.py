@@ -2,16 +2,15 @@
 from odoo import models, fields, _, api
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from odoo.exceptions import Warning, UserError
+from odoo.exceptions import UserError
 import pytz
 from odoo import tools
-from .tzlocal import get_localzone
 
 class VacacionesNomina(models.Model):
     _name = 'vacaciones.nomina'
     _description = 'VacacionesNomina'
 
-    name = fields.Char("Name", required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: _('New'))
+    name = fields.Char("Name", required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
     employee_id = fields.Many2one('hr.employee', string='Empleado')
     fecha_inicial = fields.Date('Fecha inicial')
     dias = fields.Integer('Días')
@@ -28,21 +27,24 @@ class VacacionesNomina(models.Model):
     @api.onchange('dias')
     def _onchange_dias(self):
         if self.dias and self.dias > self.dias_de_vacaciones_disponibles:
-            raise Warning("No tiene suficientes dias de vacaciones")
+            raise UserError("No tiene suficientes dias de vacaciones")
             
         
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('vacaciones.nomina') or _('New')
-        result = super(VacacionesNomina, self).create(vals)
-        return result
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Verificar si 'name' tiene el valor por defecto y asignar una secuencia única
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('vacaciones.nomina') or _('New')
+        
+        # Crear los registros en lote
+        records = super(VacacionesNomina, self).create(vals_list)
+        return records
     
     def action_validar(self):
         leave_type = self.env.ref('nomina_cfdi_extras.hr_holidays_status_vac', False)
         if self.fecha_inicial:
-            fecha_inicial = self.fecha_inicial.strftime("%Y-%m-%d")
-            date_from = datetime.strptime(fecha_inicial,"%Y-%m-%d")
+            date_from = datetime.strptime(self.fecha_inicial,"%Y-%m-%d")
             date_to = date_from + relativedelta(days=self.dias - 1)
             date_from = date_from.strftime("%Y-%m-%d") + ' 06:00:00'
             date_to = date_to.strftime("%Y-%m-%d") +' 20:00:00'
@@ -68,7 +70,7 @@ class VacacionesNomina(models.Model):
         date_to = utc_dt_to.strftime ("%Y-%m-%d %H:%M:%S")
 
         nombre = 'Vacaciones_'+self.name
-        registro_falta = self.env['hr.leave'].search([('name','=', nombre)], limit=1)
+        registro_falta = self.env['hr.holidays'].search([('name','=', nombre)], limit=1)
         if registro_falta:
            registro_falta.write({'date_from' : date_from,
                    'date_to' : date_to,
@@ -77,7 +79,7 @@ class VacacionesNomina(models.Model):
                    'state': 'validate',
                    })
         else:
-           holidays_obj = self.env['hr.leave']
+           holidays_obj = self.env['hr.holidays']
            vals = {'date_from' : date_from,
                'holiday_status_id' : leave_type and leave_type.id,
                'employee_id' : self.employee_id.id,
@@ -86,11 +88,11 @@ class VacacionesNomina(models.Model):
                'state': 'confirm',}
 
            holiday = holidays_obj.new(vals)
-           #holiday._onchange_employee_id()
-           #holiday._onchange_date_from()
+           holiday._onchange_employee_id()
+           holiday._onchange_date_from()
            vals.update(holiday._convert_to_write({name: holiday[name] for name in holiday._cache}))
            #holidays_obj.create(vals)
-           vacacion = self.env['hr.leave'].create(vals)
+           vacacion = self.env['hr.holidays'].create(vals)
            vacacion.action_validate()
         self.write({'state':'done'})
 
