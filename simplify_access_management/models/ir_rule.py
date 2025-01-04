@@ -57,7 +57,7 @@ class ir_rule(models.Model):
             value = self._cr.execute("""select state from ir_module_module where name = 'simplify_access_management'""")
             value = self._cr.fetchone()
             value = value and value[0] or False
-            if model_name and value == 'installed':
+            if model_name and model_name in self.env and model_name in self.env and value == 'installed':
                 # if model_name:
                 self._cr.execute("SELECT id FROM ir_model WHERE model='" + model_name + "'")
                 model_numeric_id = self._cr.fetchone()

@@ -32,7 +32,7 @@ class Action(Action):
     def load(self, action_id, additional_context=None):
         res = super(Action,self).load(action_id, additional_context=additional_context)
         if res:
-            cids = int(request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids').split('-')[0] or request.env.company.id)
+            cids = int(request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids').split(',')[0] or request.env.company.id)
             remove_action = request.env['remove.action'].sudo().search([('view_data_ids','!=',False),
                                                                     ('access_management_id.active', '=', True),
                                                                     ('access_management_id','in',request.env.user.access_management_ids.ids),

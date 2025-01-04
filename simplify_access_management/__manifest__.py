@@ -11,7 +11,7 @@
 
 {
     'name': 'Simplify Access Management',
-    'version': '17.0.6.6.12',
+    'version': '17.0.7.6.14',
     'sequence': 5,
     'author': 'Terabits Technolab',
     'license': 'OPL-1',
@@ -245,6 +245,7 @@
             '/simplify_access_management/static/src/js/cog_menu.js',
             '/simplify_access_management/static/src/js/form_controller.js',
             '/simplify_access_management/static/src/js/pivot_grp_menu.js',
+            '/simplify_access_management/static/src/js/pivot_renderer.js',
             '/simplify_access_management/static/src/js/model_field_selector.js',
             '/simplify_access_management/static/src/js/search_bar_menu.js',
         ],

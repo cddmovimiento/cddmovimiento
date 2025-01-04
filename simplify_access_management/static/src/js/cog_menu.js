@@ -4,7 +4,7 @@ import { patch } from "@web/core/utils/patch";
 import { CogMenu } from "@web/search/cog_menu/cog_menu";
 import { registry } from "@web/core/registry";
 
-import { onWillStart, useState } from "@odoo/owl";
+import { useState } from "@odoo/owl";
 const cogMenuRegistry = registry.category("cogMenu");
 
 patch(CogMenu.prototype, {
