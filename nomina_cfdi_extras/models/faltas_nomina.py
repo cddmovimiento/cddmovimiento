@@ -20,16 +20,12 @@ class FaltasNomina(models.Model):
     state = fields.Selection([('draft', 'Borrador'), ('done', 'Hecho'), ('cancel', 'Cancelado')], string='Estado', default='draft')
     dias = fields.Integer("Dias")
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            # Verificar si 'name' tiene el valor por defecto y asignar una secuencia única
-            if vals.get('name', _('New')) == _('New'):
-                vals['name'] = self.env['ir.sequence'].next_by_code('faltas.nomina') or _('New')
-        
-        # Procesar la creación en lote
-        records = super(FaltasNomina, self).create(vals_list)
-        return records
+    @api.model
+    def create(self, vals):
+        if vals.get('name', _('New')) == _('New'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('faltas.nomina') or _('New')
+        result = super(FaltasNomina, self).create(vals)
+        return result
 
     @api.onchange('fecha_inicio', 'fecha_fin')
     def _get_dias(self):

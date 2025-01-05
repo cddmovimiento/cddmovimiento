@@ -103,16 +103,12 @@ class IncidenciasNomina(models.Model):
             sueldo_diario_integrado = 0
         return sueldo_diario_integrado
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            # Asignar una secuencia única si 'name' tiene el valor predeterminado
-            if vals.get('name', _('New')) == _('New'):
-                vals['name'] = self.env['ir.sequence'].next_by_code('incidencias.nomina') or _('New')
-        
-        # Crear los registros en lote
-        records = super(IncidenciasNomina, self).create(vals_list)
-        return records
+    @api.model
+    def create(self, vals):
+        if vals.get('name', _('New')) == _('New'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('incidencias.nomina') or _('New')
+        result = super(IncidenciasNomina, self).create(vals)
+        return result
 
     def action_validar(self):
         employee = self.employee_id

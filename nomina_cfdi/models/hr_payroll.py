@@ -582,15 +582,12 @@ class HrPayslip(models.Model):
             else:
                 raise UserError(_('No están configurados correctamente los periodos semanales en las tablas CFDI'))
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            # Si no hay 'fecha_pago' pero sí 'date_to', usar 'date_to' como 'fecha_pago'
-            if not vals.get('fecha_pago') and vals.get('date_to'):
-                vals['fecha_pago'] = vals.get('date_to')
-        
-        # Llamar al método original de creación para procesar en lote
-        res = super(HrPayslip, self).create(vals_list)
+    @api.model
+    def create(self, vals):
+        if not vals.get('fecha_pago') and vals.get('date_to'):
+            vals.update({'fecha_pago': vals.get('date_to')})
+            
+        res = super(HrPayslip, self).create(vals)
         return res
     
     @api.depends('number')
@@ -1023,7 +1020,7 @@ class HrPayslip(models.Model):
                         'TotalJubilacionPensionRetiro': payslip_total_JPRE,
                         'TotalGravado': round(payslip_total_PERG,2),
                         'TotalExento': round(payslip_total_PERE,2),
-                        'TotalSueldos': round(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE,2),
+                        'TotalSueldos': round(abs(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE),2),
                },
         }
 
@@ -1202,13 +1199,19 @@ class HrPayslip(models.Model):
             diaspagados = 365
         else:
             diaspagados = work_days
+
+        if diaspagados == 0:
+            diaspagados = 0.001
+
         contrato = 0
-        if self.struct_id.name == 'Liquidación - indemnizacion/finiquito':
-            regimen = '605'
-            contrato = '99'
-        else:
-            regimen = self.employee_id.tipo_regimen
-            contrato = self.employee_id.tipo_contrato
+        
+        #if self.struct_id.name == 'Liquidación - indemnizacion/finiquito':
+            #regimen = '605'
+            #contrato = '99'
+        #else:
+
+        regimen = self.employee_id.tipo_regimen
+        contrato = self.employee_id.tipo_contrato
         cur_time = datetime.datetime.now(pytz.timezone(self.env.user.tz))
         cert = self.company_id.l10n_mx_edi_certificate_ids
         if not cert:
@@ -1226,6 +1229,11 @@ class HrPayslip(models.Model):
                 Deducciones['TotalOtrasDeducciones'] = str(round(payslip_total_TDED - total_imp_ret,2)) or ''
                 Deducciones['TotalImpuestosRetenidos'] = ''
 
+        PeriodicidadPago = '99'
+        
+        if self.tipo_nomina == 'O':
+            PeriodicidadPago = str(self.contract_id.periodicidad_pago)
+            
         data = {
             'Atributos': {
                 'Fecha': cur_time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -1291,7 +1299,7 @@ class HrPayslip(models.Model):
                 'Departamento': '',##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
                 'Puesto': '',##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
                 'RiesgoPuesto': str(self.contract_id.riesgo_puesto) or '',
-                'PeriodicidadPago': str(self.contract_id.periodicidad_pago) or '',
+                'PeriodicidadPago': PeriodicidadPago or '',
                 'CuentaBancaria': '',##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
                 'Banco': '',##NECESITAMOS ESTE DATO CONFORME A LA DOCUMENTACION DEL SAT
                 'SalarioBaseCotApor': str(round(self.contract_id.sueldo_base_cotizacion,2)) or '',
@@ -1299,7 +1307,7 @@ class HrPayslip(models.Model):
                 'ClaveEntFed': self.employee_id.estado.code or '',   
             },
             'Percepciones': {
-                'TotalSueldos': str(round(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE,2)),
+                'TotalSueldos': str(round(abs(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE),2)),
                 'TotalGravado': str(round(payslip_total_PERG,2)),
                 'TotalExento': str(round(payslip_total_PERE,2)),
                 'TotalSeparacionIndemnizacion': str(round(payslip_total_SEIN,2))
@@ -1392,7 +1400,7 @@ class HrPayslip(models.Model):
                 'TipoRegimen': self.employee_id.tipo_regimen,
                 'NumEmpleado': self.employee_id.no_empleado or '',
                 #'RiesgoPuesto': str(self.contract_id.riesgo_puesto) or '',
-                'PeriodicidadPago': str(self.contract_id.periodicidad_pago) or '',
+                'PeriodicidadPago': PeriodicidadPago or '',
                 #'SalarioBaseCotApor': str(round(self.contract_id.sueldo_base_cotizacion,2)) or '',
                 #'SalarioDiarioIntegrado': str(round(self.contract_id.sueldo_diario_integrado,2)) or '',
                 'ClaveEntFed': self.employee_id.estado.code or '',
@@ -1409,13 +1417,13 @@ class HrPayslip(models.Model):
                 'TipoRegimen': str(self.employee_id.tipo_regimen),
                 'NumEmpleado': self.employee_id.no_empleado or '',
                 'RiesgoPuesto': str(self.contract_id.riesgo_puesto) or '',
-                'PeriodicidadPago': str(self.contract_id.periodicidad_pago) or '',
+                'PeriodicidadPago': PeriodicidadPago or '',
                 'SalarioBaseCotApor': str(round(self.contract_id.sueldo_base_cotizacion,2)) or '',
                 'SalarioDiarioIntegrado': str(round(self.contract_id.sueldo_diario_integrado,2)) or '',
                 'ClaveEntFed': self.employee_id.estado.code or '',
             })
         n12percepciones = SubElement(nomina12,'nomina12:Percepciones',{
-            'TotalSueldos': str(round(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE,2)),
+            'TotalSueldos': str(round(abs(payslip_total_PERG + payslip_total_PERE - payslip_total_SEIN - payslip_total_JPRE),2)),
             'TotalGravado': str(round(payslip_total_PERG,2)),
             'TotalExento': str(round(payslip_total_PERE,2)),
             'TotalSeparacionIndemnizacion': str(round(payslip_total_SEIN,2)),

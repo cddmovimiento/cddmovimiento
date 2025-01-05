@@ -16,15 +16,12 @@ class HorasNomina(models.Model):
     state = fields.Selection([('draft', 'Borrador'), ('done', 'Hecho'), ('cancel', 'Cancelado')], string='Estado', default='draft')
     horas = fields.Char("Horas")
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('name', _('New')) == _('New'):
-                vals['name'] = self.env['ir.sequence'].next_by_code('horas.nomina') or _('New')
-        
-        # Llamar al método original de creación para procesar en lote
-        records = super(HorasNomina, self).create(vals_list)
-        return records
+    @api.model
+    def create(self, vals):
+        if vals.get('name', _('New')) == _('New'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('horas.nomina') or _('New')
+        result = super(HorasNomina, self).create(vals)
+        return result
 
     def action_validar(self):
         self.write({'state':'done'})

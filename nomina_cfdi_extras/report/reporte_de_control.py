@@ -5,7 +5,6 @@ from collections import defaultdict
 
 class PartnerXlsx(models.AbstractModel):
     _name = 'report.nomina_cfdi_extras.report_de_control_payslip_batch'
-    _description = 'Reporte de control de nómina'
     _inherit = 'report.report_xlsx.abstract'
 
     def generate_xlsx_report(self, workbook, data, payslip_batches):
