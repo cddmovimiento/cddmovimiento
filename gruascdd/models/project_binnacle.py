@@ -201,7 +201,7 @@ class ProjectBinnacle(models.Model):
                 "date": local_date_end.date(),
                 "value": hourmeter_end,
                 "vehicle_id": vehicle_id,
-                "driver_employee_id": gruero_id,
+                #"driver_employee_id": gruero_id,
                 "binnacle_id": self.id,
                 "folio": folio,
             }).id
@@ -210,7 +210,7 @@ class ProjectBinnacle(models.Model):
                 "date": local_date_end.date(),
                 "value": odometer_end,
                 "vehicle_id": vehicle_id,
-                "driver_employee_id": gruero_id,
+                #"driver_employee_id": gruero_id,
                 "binnacle_id": self.id,
                 "folio": folio,
             }).id
@@ -219,7 +219,7 @@ class ProjectBinnacle(models.Model):
                 "date": local_date_end.date(),
                 "value": gasolina,
                 "vehicle_id": vehicle_id,
-                "driver_employee_id": gruero_id,
+                #"driver_employee_id": gruero_id,
                 "binnacle_id": self.id,
                 "folio": folio,
             }).id
@@ -291,8 +291,8 @@ class ProjectBinnacle(models.Model):
                 "date": local_date_end.date(),
                 "value": hourmeter_end,
                 "vehicle_id": vehicle_id.id,
-                "driver_employee_id": gruero_id.id,
-                "driver_id": gruero_id.id,
+                #"driver_employee_id": gruero_id.id,
+                #"driver_id": gruero_id.id,
                 "binnacle_id": id,
                 "task_name": parent_id.name,
                 "folio": folio
@@ -303,8 +303,8 @@ class ProjectBinnacle(models.Model):
                 "date": local_date_end.date(),
                 "value": odometer_end,
                 "vehicle_id": vehicle_id.id,
-                "driver_employee_id": gruero_id.id,
-                "driver_id": gruero_id.id,
+                #"driver_employee_id": gruero_id.id,
+                #"driver_id": gruero_id.id,
                 "binnacle_id": id,
                 "task_name": parent_id.name,
                 "folio": folio
@@ -315,8 +315,8 @@ class ProjectBinnacle(models.Model):
                 "date": local_date_end.date(),
                 "value": gasolina,
                 "vehicle_id": vehicle_id.id,
-                "driver_employee_id": gruero_id.id,
-                "driver_id": gruero_id.id,
+                #"driver_employee_id": gruero_id.id,
+                #"driver_id": gruero_id.id,
                 "binnacle_id": id,
                 "task_name": parent_id.name,
                 "folio": folio
