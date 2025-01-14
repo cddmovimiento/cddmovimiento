@@ -337,7 +337,8 @@ class employee_loan(models.Model):
 
     def paid_loan(self):
         if self.loan_type_id.tipo_deduccion == '1':
-           if not self.employee_id.address_home_id:
+           partner = self.env['res.partner'].search([('employee_ids','=',self.employee_id.employee_id.id)], limit=1)
+           if not partner:
                raise ValidationError(_('Para realizar un préstamo el empleado debe tener una dirección asignada'))
 
            self.state = 'paid'
@@ -351,7 +352,7 @@ class employee_loan(models.Model):
            lst = []
            lst.append((0,0,{
                            'account_id':self.loan_type_id and self.loan_type_id.loan_account.id,
-                           'partner_id':self.employee_id.address_home_id and self.employee_id.address_home_id.id or False,
+                           'partner_id': partner.id if partner else False,
                            'name':self.name,
                            'credit':self.loan_amount or 0.0,
                        }))
@@ -359,14 +360,14 @@ class employee_loan(models.Model):
            if self.interest_amount:
                lst.append((0,0,{
                                'account_id':self.loan_type_id and self.loan_type_id.interest_account.id,
-                               'partner_id':self.employee_id.address_home_id and self.employee_id.address_home_id.id or False,
+                               'partner_id': partner.id if partner else False,
                                'name':str(self.name)+' - '+'Interest',
                                'credit':self.interest_amount or 0.0,
                            }))
 
            credit_account=False
-           if self.employee_id.address_home_id and self.employee_id.address_home_id.property_account_payable_id:
-               credit_account = self.employee_id.address_home_id.property_account_payable_id.id or False
+           if partner and partner.property_account_payable_id:
+               credit_account = partner.property_account_payable_id.id or False
                     
            debit_amount = self.loan_amount
            if self.interest_amount:
@@ -374,7 +375,7 @@ class employee_loan(models.Model):
 
            lst.append((0,0,{
                            'account_id':credit_account or False,
-                           'partner_id':self.employee_id.address_home_id and self.employee_id.address_home_id.id or False,
+                           'partner_id': partner.id if partner else False,
                            'name':'/',
                            'debit':debit_amount  or 0.0,
                        }))
