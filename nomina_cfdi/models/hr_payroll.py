@@ -379,8 +379,8 @@ class HrPayslip(models.Model):
             d_from_1 = date_from
             d_to_1 = date_to
             if date_start_1 > d_from_1:
-                   work_data['days'] =  (d_to_1 - date_start_1).days + 1
-                   nvo_ingreso = True
+                work_data['days'] =  (d_to_1 - date_start_1).days + 1
+                nvo_ingreso = True
 
             if resource_days < 100:
                 #periodo para nómina quincenal
