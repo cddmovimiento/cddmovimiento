@@ -440,7 +440,7 @@ class HrPayslip(models.Model):
                             number_of_days = dias_periodo - leave_days
                       else:
                           if nvo_ingreso:
-                              number_of_days = date_from - contract.date_start + 1
+                              number_of_days = (date_from - contract.date_start).days + 1
                           else: 
                               number_of_days = resource_days
                #calculo para nóminas semanales
