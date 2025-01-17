@@ -255,8 +255,9 @@ class projectTaskXlsx(models.AbstractModel):
                         hour, minute = self.float_time_convert(product.hourmeter_end)
                         hourmeter_end = '{0:02d}:{1:02d}'.format(hour, minute)
 
-                        hour, minute = self.float_time_convert(product.delta_hourmeter)
-                        delta_hourmeter = '{0:02d}:{1:02d}'.format(hour, minute)
+                        #hour, minute = self.float_time_convert(product.delta_hourmeter)
+                        #delta_hourmeter = '{0:02d}:{1:02d}'.format(hour, minute)
+                        delta_hourmeter = product.delta_hourmeter
                         
                         product_name = rec.tasks_ids[0].binnacle_ids.filtered(
                             lambda u: u.product_id.id == product.product_id.id)
