@@ -286,7 +286,7 @@ class projectTaskXlsx(models.AbstractModel):
 
                         sheet.write(y_title, 7, hourmeter_init if product.hourmeter_init else "0:00", f_table_cell_text)
                         sheet.write(y_title, 8, hourmeter_end if product.hourmeter_end else "0:00", f_table_cell_text)
-                        sheet.write(y_title, 9, delta_hourmeter if product.delta_hourmeter else "0:00", f_table_cell_text)
+                        sheet.write(y_title, 9, delta_hourmeter if product.delta_hourmeter else "0", f_table_cell_text)
 
                         sheet.write(y_title, 10, product.gasolina if product.gasolina else 0.00, f_table_cell_number)
 
