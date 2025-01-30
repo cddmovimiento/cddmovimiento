@@ -46,8 +46,8 @@ class FaltasNomina(models.Model):
         elif self.tipo_de_falta=='retardo':
             leave_type = self.env.ref('nomina_cfdi_extras.hr_holidays_status_fr', False)
 
-        date_from = self.fecha_inicio +' 06:00:00'
-        date_to = self.fecha_fin +' 20:00:00'
+        date_from = str(self.fecha_inicio) +' 06:00:00'
+        date_to = str(self.fecha_fin) +' 20:00:00'
         
         timezone = self._context.get('tz')
         if not timezone:
