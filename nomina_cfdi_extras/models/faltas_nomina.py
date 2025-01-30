@@ -31,7 +31,7 @@ class FaltasNomina(models.Model):
     def _get_dias(self):
         if self.fecha_inicio and self.fecha_fin:
             values = {
-                'dias': (datetime.strptime(self.fecha_fin,"%Y-%m-%d")- datetime.strptime(self.fecha_inicio,"%Y-%m-%d")).days + 1
+                'dias': (datetime.strptime(str(self.fecha_fin),"%Y-%m-%d")- datetime.strptime(str(self.fecha_inicio),"%Y-%m-%d")).days + 1
                 }
             self.update(values)
     
