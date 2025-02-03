@@ -249,11 +249,13 @@ class projectTaskXlsx(models.AbstractModel):
                         att_tz_dt = pytz.utc.localize(attendance_dt)
                         local_date_end = att_tz_dt.astimezone(att_tz) 
 
-                        hour, minute = self.float_time_convert(product.hourmeter_init)
-                        hourmeter_init = '{0:02d}:{1:02d}'.format(hour, minute)
+                        #hour, minute = self.float_time_convert(product.hourmeter_init)
+                        #hourmeter_init = '{0:02d}:{1:02d}'.format(hour, minute)
+                        hourmeter_init = product.hourmeter_init
 
-                        hour, minute = self.float_time_convert(product.hourmeter_end)
-                        hourmeter_end = '{0:02d}:{1:02d}'.format(hour, minute)
+                        #hour, minute = self.float_time_convert(product.hourmeter_end)
+                        #hourmeter_end = '{0:02d}:{1:02d}'.format(hour, minute)
+                        hourmeter_end = product.hourmeter_end
 
                         #hour, minute = self.float_time_convert(product.delta_hourmeter)
                         #delta_hourmeter = '{0:02d}:{1:02d}'.format(hour, minute)
@@ -284,8 +286,8 @@ class projectTaskXlsx(models.AbstractModel):
                         sheet.write(y_title, 5, product.odometer_end if product.odometer_end else 0.00, f_table_cell_number)
                         sheet.write(y_title, 6, product.delta_odometer if product.delta_odometer else 0.00, f_table_cell_number)
 
-                        sheet.write(y_title, 7, hourmeter_init if product.hourmeter_init else "0:00", f_table_cell_text)
-                        sheet.write(y_title, 8, hourmeter_end if product.hourmeter_end else "0:00", f_table_cell_text)
+                        sheet.write(y_title, 7, hourmeter_init if product.hourmeter_init else "0", f_table_cell_text)
+                        sheet.write(y_title, 8, hourmeter_end if product.hourmeter_end else "0", f_table_cell_text)
                         sheet.write(y_title, 9, delta_hourmeter if product.delta_hourmeter else "0", f_table_cell_text)
 
                         sheet.write(y_title, 10, product.gasolina if product.gasolina else 0.00, f_table_cell_number)
