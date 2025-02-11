@@ -24,17 +24,15 @@ class employee_loan(models.Model):
                 
     @api.model
     def _get_employee(self):
-        employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-        return employee.id if employee else False
-    
+        employee_id = self.env['hr.employee'].search([('user_id','=',self.env.user.id)],limit=1)
+        return employee_id
+
     @api.model
     def _get_default_user(self):
-        return self.env.user.id or False
-    
+        return self.env.user
     @api.model
     def nearest_date(self, items, pivot):
         return min(items, key=lambda x: abs(x - pivot))
-    
     @api.model
     def get_quincenal_end_date(self,start_date, term):
         for i in range(0,term):
@@ -54,6 +52,7 @@ class employee_loan(models.Model):
     
     @api.onchange('start_date','term')
     def _get_end_date(self):
+        
         for loan in self:
             if loan.start_date and loan.term:
                 periodo_de_pago = self.loan_type_id.periodo_de_pago or ''
@@ -73,21 +72,21 @@ class employee_loan(models.Model):
 
     name = fields.Char('Name',default='/',copy=False)
     state = fields.Selection(loan_state,string='Estado',default='draft', track_visibility='onchange')
-    employee_id = fields.Many2one('hr.employee',string='Empleado',default=_get_employee)
+    employee_id = fields.Many2one('hr.employee',string='Empleado',default=_get_employee, required="1")
     department_id = fields.Many2one('hr.department',string='Departamento')
 #    hr_manager_id = fields.Many2one('hr.employee',string='Gerente RH')
-#    manager_id = fields.Many2one('hr.employee',string='Gerente de departamento', required=True)
+#    manager_id = fields.Many2one('hr.employee',string='Gerente de departamento', required="1")
     job_id = fields.Many2one('hr.job',string="Puesto de trabajo")
     date = fields.Date('Fecha',default=fields.Date.today())
-    start_date = fields.Date('Fecha de inicio',default=fields.Date.today(),required=True)
+    start_date = fields.Date('Fecha de inicio',default=fields.Date.today(),required="1")
     end_date = fields.Date('Fecha de termino')
-    term = fields.Integer('Plazos',required=True)
-    loan_type_id = fields.Many2one('employee.loan.type',string='Tipo',required=True)
-    payment_method = fields.Selection([('by_payslip','Nómina')],string='Método de pago',default='by_payslip', required=True)
-    loan_amount = fields.Float('Monto de deducción',required=True)
+    term = fields.Integer('Plazos',required="1")
+    loan_type_id = fields.Many2one('employee.loan.type',string='Tipo',required="1")
+    payment_method = fields.Selection([('by_payslip','Nómina')],string='Método de pago',default='by_payslip', required="1")
+    loan_amount = fields.Float('Monto de deducción',required="1")
     paid_amount = fields.Float('Monto de pago',compute='get_paid_amount')
     remaing_amount = fields.Float('Cantidad restante', compute='get_remaing_amount')
-    installment_amount = fields.Float('Cantidad a plazos',required=True, compute='get_installment_amount')
+    installment_amount = fields.Float('Cantidad a plazos',required="1", compute='get_installment_amount')
     loan_url = fields.Char('URL', compute='get_loan_url')
     user_id = fields.Many2one('res.users',default=_get_default_user)
     is_apply_interest = fields.Boolean('Aplicar interés')
@@ -96,13 +95,13 @@ class employee_loan(models.Model):
     interest_amount = fields.Float('Monto de interés', compute='get_interest_amount')
     # ins_interest_amount = fields.Float('Installment Interest Amount', compute='get_install_interest_amount')
     installment_lines = fields.One2many('installment.line','loan_id',string='Cuotas',)
-    notes = fields.Text('Razón', required=True)
+    notes = fields.Text('Razón', required="1")
     is_close = fields.Boolean('Esta cerrado',compute='is_ready_to_close')
     move_id = fields.Many2one('account.move',string='Diario')
     company_id = fields.Many2one(
         comodel_name='res.company',
         required=True, index=True,
-        default=lambda self: self.env.company.id)
+        default=lambda self: self.env.company)
 
 #     @api.onchange('loan_type_id') #,'term','interest_rate','interest_type'
 #     def onchange_term_interest_type(self):
@@ -133,53 +132,54 @@ class employee_loan(models.Model):
             loan.paid_amount = amt
 
     def compute_installment(self):
-        vals = []
+        vals=[]
 
-        for i in range(0, self.term):
+        for i in range(0,self.term):
             date = self.start_date
-
+            
             periodo_de_pago = self.loan_type_id.periodo_de_pago or ''
-            if periodo_de_pago == 'Semanal':
-                date = date + relativedelta(weeks=i)
-            elif periodo_de_pago == 'Quincenal':
-                if i != 0:
-                    date = date + relativedelta(days=i*15)
-                    month_last_day = monthrange(date.year, date.month)[1]
-                    items = [date + relativedelta(day=month_last_day), date + relativedelta(day=15)]
-                    previous_month_date = date + relativedelta(months=-1)
-                    previous_month_last_day = monthrange(previous_month_date.year, previous_month_date.month)[1]
-                    items.append(previous_month_date + relativedelta(day=previous_month_last_day),)
-                    if date.day > 15:
-                        items.append(date + relativedelta(months=1, day=15))
-                    date = self.nearest_date(items, date)
+            if periodo_de_pago=='Semanal':
+                date = date+relativedelta(weeks=i)
+            elif periodo_de_pago=='Quincenal':
+                if i!=0:
+                    date = date+relativedelta(days=i*15)
+                    month_last_day = monthrange(date.year,date.month)[1]
+                    items = [date+relativedelta(day=month_last_day), date+relativedelta(day=15)]
+                    previous_month_date = date+relativedelta(months=-1)
+                    previous_month_last_day = monthrange(previous_month_date.year,previous_month_date.month)[1]
+                    items.append(previous_month_date+relativedelta(day=previous_month_last_day),)
+                    if date.day>15:
+                        items.append(date+relativedelta(months=1,day=15))
+                    date = self.nearest_date(items,date)
             else:
-                date = date + relativedelta(months=i)
-
+                date = date+relativedelta(months=i)
+            
             amount = self.loan_amount
             interest_amount = 0.0
-            ins_interest_amount = 0.0
+            ins_interest_amount=0.0
             if self.is_apply_interest:
                 amount = self.loan_amount
-                interest_amount = (amount * self.interest_rate) / 100
+                interest_amount = (amount  * self.interest_rate)/100 #* self.term/12
 
                 if self.interest_rate and self.loan_amount and self.interest_type == 'reduce':
                     amount = self.loan_amount - self.installment_amount * i
-                    interest_amount = (amount * self.term * self.interest_rate) / 100
+                    interest_amount = (amount * self.term * self.interest_rate) / 100 # / 12
                 ins_interest_amount = interest_amount / self.term
-            vals.append((0, 0, {
-                'name': self.name + ' - ' + str(i + 1),
-                'employee_id': self.employee_id.id if self.employee_id else False,
-                'date': date,
-                'amount': amount,
-                'interest': interest_amount,
-                'installment_amt': self.installment_amount,
-                'ins_interest': ins_interest_amount,
+            vals.append((0, 0,{
+                #'name':'INS - '+self.name+ ' - '+str(i+1),
+                'name': self.name+ ' - '+str(i+1),
+                'employee_id':self.employee_id and self.employee_id.id or False,
+                'date':date,
+                'amount':amount,
+                'interest':interest_amount,
+                'installment_amt':self.installment_amount,
+                'ins_interest':ins_interest_amount,
                 'tipo_deduccion': self.loan_type_id.tipo_deduccion,
             }))
         if self.installment_lines:
             for l in self.installment_lines:
                 l.unlink()
-        self.installment_lines = vals
+        self.installment_lines=vals
 
     @api.depends('paid_amount','loan_amount','interest_amount')
     def get_remaing_amount(self):
@@ -223,13 +223,13 @@ class employee_loan(models.Model):
     @api.onchange('term')
     def get_loan_url(self):
         for loan in self:
-            base_url = ''
             if loan.term:
                 base_url = self.env['ir.config_parameter'].get_param('web.base.url', default='http://localhost:8069')
                 if base_url:
                     base_url += '/web/login?db=%s&login=%s&key=%s#id=%s&model=%s' % (
                     self._cr.dbname, '', '', loan.id, 'employee.loan')
-            loan.loan_url = base_url
+                    loan.loan_url = base_url
+
 
     @api.depends('term','loan_amount')
     def get_installment_amount(self):
@@ -276,13 +276,41 @@ class employee_loan(models.Model):
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         if self.employee_id:
-            self.department_id = self.employee_id.department_id.id if self.employee_id.department_id else False
-            self.job_id = self.employee_id.job_id.id if self.employee_id.job_id else False
+            self.department_id = self.employee_id and self.employee_id.department_id and \
+                                 self.employee_id.department_id.id or False,
+
+#            self.manager_id = self.department_id and self.department_id.manager_id and \
+#                                  self.department_id.manager_id.id or self.employee_id.parent_id.id or False,
+
+            self.job_id = self.employee_id.job_id and self.employee_id.job_id.id or False,
 
     def action_send_request(self):
+#        if not self.manager_id:
+#            raise ValidationError(_('Por favor seleccione el gerente del departamento'))
         self.state = 'hr_approval'
         if not self.installment_lines:
             self.compute_installment()
+        #if self.manager_id and self.manager_id.work_email:
+        #    ir_model_data = self.env['ir.model.data']
+        #    template_id = ir_model_data.get_object_reference('nomina_cfdi_extra',
+        #                                                          'dev_dep_manager_request')
+        #    mtp = self.env['mail.template']
+        #    template_id = mtp.browse(template_id[1])
+        #    template_id.write({'email_to': self.manager_id.work_email})
+        #    s=template_id.send_mail(self.ids[0], True)
+
+#    def get_hr_manager_email(self):
+#        group_id = self.env['ir.model.data'].get_object_reference('hr', 'group_hr_manager')[1]
+#        group_ids = self.env['res.groups'].browse(group_id)
+#        email=''
+#        if group_ids:
+#            employee_ids = self.env['hr.employee'].search([('user_id', 'in', group_ids.users.ids)])
+#            for emp in employee_ids:
+#                if email:
+#                    email = email+','+emp.work_email
+#                else:
+#                    email= emp.work_email
+#        return email
 
     def dep_manager_approval_loan(self):
         self.state = 'dep_approval'
@@ -309,8 +337,7 @@ class employee_loan(models.Model):
 
     def paid_loan(self):
         if self.loan_type_id.tipo_deduccion == '1':
-           partner = self.env['res.partner'].search([('employee_ids','=',self.employee_id.employee_id.id)], limit=1)
-           if not partner:
+           if not self.employee_id.work_contact_id:
                raise ValidationError(_('Para realizar un préstamo el empleado debe tener una dirección asignada'))
 
            self.state = 'paid'
@@ -324,7 +351,7 @@ class employee_loan(models.Model):
            lst = []
            lst.append((0,0,{
                            'account_id':self.loan_type_id and self.loan_type_id.loan_account.id,
-                           'partner_id': partner.id if partner else False,
+                           'partner_id':self.employee_id.work_contact_id and self.employee_id.work_contact_id.id or False,
                            'name':self.name,
                            'credit':self.loan_amount or 0.0,
                        }))
@@ -332,14 +359,14 @@ class employee_loan(models.Model):
            if self.interest_amount:
                lst.append((0,0,{
                                'account_id':self.loan_type_id and self.loan_type_id.interest_account.id,
-                               'partner_id': partner.id if partner else False,
+                               'partner_id':self.employee_id.work_contact_id and self.employee_id.work_contact_id.id or False,
                                'name':str(self.name)+' - '+'Interest',
                                'credit':self.interest_amount or 0.0,
                            }))
 
            credit_account=False
-           if partner and partner.property_account_payable_id:
-               credit_account = partner.property_account_payable_id.id or False
+           if self.employee_id.work_contact_id and self.employee_id.work_contact_id.property_account_payable_id:
+               credit_account = self.employee_id.work_contact_id.property_account_payable_id.id or False
                     
            debit_amount = self.loan_amount
            if self.interest_amount:
@@ -347,7 +374,7 @@ class employee_loan(models.Model):
 
            lst.append((0,0,{
                            'account_id':credit_account or False,
-                           'partner_id': partner.id if partner else False,
+                           'partner_id':self.employee_id.work_contact_id and self.employee_id.work_contact_id.id or False,
                            'name':'/',
                            'debit':debit_amount  or 0.0,
                        }))
@@ -389,5 +416,3 @@ class employee_loan(models.Model):
             if loan.state != 'draft':
                 raise ValidationError(_('El préstamo solo se puede eliminar si está en estaado de borrador'))
         return super(employee_loan,self).unlink()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
