@@ -5,7 +5,14 @@ from odoo import models, fields, api
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    type_employee = fields.Selection(string='Empleado Operativo', selection=[('gruero', 'Gruero'), ('ayudante', 'Ayudante')])
+    type_employee = fields.Selection(
+        string='Empleado Operativo', 
+        selection=[
+            ('gruero', 'Gruero'), 
+            ('ayudante', 'Ayudante'),
+            ('mantenimiento', 'Mantenimiento')
+        ]
+    )
 
     in_project_task = fields.Integer(
         "in_project_task",
