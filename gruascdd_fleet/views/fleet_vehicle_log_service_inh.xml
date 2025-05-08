@@ -5,18 +5,122 @@
         <field name="model">fleet.vehicle.log.services</field>
         <field name="inherit_id" ref="fleet.fleet_vehicle_log_services_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//sheet//group[1]//group[2]" position="inside">
-                <field name="type_service_id"/>
-            </xpath>
-
             <xpath expr="sheet//group[2]" position="after">
                 <notebook>
+                    <page string="Bitácora" name="binnacle_page">
+                        <field name = "id" invisible = "1"/>
+                        <field name="binnacle_ids">
+                            <tree editable="bottom">
+                                <field name="type_activity"/>
+                                <field name = "date_init" required="1" widget="datetime" />
+                                <field name = "date_end" required="1" widget="datetime" />
+                                <field name = "delta" force_save="1" sum="Delta"/>                               
+                            </tree>
+                        </field>
+                    </page>
                     <page name="check_list_services" string="Lista de Verificacion">
-                        <field name="check_list_ids" widget="many2many_checkboxes"  domain="[('type_service_id', '=', type_service_id)]" invisible="not type_service_id"/>
+                        <field name = "id" invisible = "1"/>
+                        <field name="verification_list_ids"> <!--domain="[('type_service_id', '=', type_service_id)]"-->
+                            <tree editable="bottom"  delete="false">
+                                <field name = "nombre" readonly="1" force_save="1"/>
+                                <field name = "opcion"  widget="radio" options="{'horizontal': true}"/>
+                                <field name = "cantidad" required="1"  />
+                                <field name = "observaciones" required="1"/>                               
+                            </tree>
+                        </field>
+                        <!--<field name="check_list_ids" widget="many2many_checkboxes"  domain="[('type_service_id', '=', type_service_id)]" invisible="not type_service_id"/>-->
+                    </page>
+                    <page name="check_list_failure" string="Lista de fallas">
+                        <field name = "id" invisible = "1"/>
+                        <field name="failure_ids"> <!--domain="[('type_service_id', '=', type_service_id)]"-->
+                            <tree editable="bottom">
+                                <field name = "failure" options="{'no_create': true}"/>
+                                <field name = "other_text" required="1"/>
+                                <field name = "description" required="1"/>          
+                                <field name = "cantidad" required="1"  />
+                                <field name = "observaciones" required="1"/>
+                            </tree>
+                        </field>
                     </page>
                 </notebook>
             </xpath>
-
+            
+            <xpath expr="//field[@name='description']" position="before">   
+                <field name="folio" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='vehicle_id']" position="after">   
+                <field name="ubicacion"/>
+            </xpath>
+            <xpath expr="//field[@name='ubicacion']" position="after">   
+                <field name="hourmeter"/>
+            </xpath>
+            <xpath expr="//field[@name='amount']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='vendor_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='hourmeter']" position="after">   
+                <field name="next_hourmeter"/>
+            </xpath>
+            <xpath expr="//field[@name='date']" position="after">   
+                <field name="mecanico"/>
+            </xpath>
+            <xpath expr="//field[@name='mecanico']" position="after">   
+                <field name="electrico"/>
+            </xpath>
+            <xpath expr="//field[@name='electrico']" position="after">   
+                <field name="ayudante"/>
+            </xpath>
+            <xpath expr="//field[@name='ayudante']" position="after">   
+                <field name="encargado"/>
+            </xpath>
+            <xpath expr="//field[@name='encargado']" position="after">   
+                <field name="foliado" invisible="True"/>
+            </xpath>
+            <xpath expr="//field[@name='encargado']" position="after">   
+                <field name="tipo" invisible="True"/>
+            </xpath>
+            <xpath expr="//field[@name='service_type_id']" position="attributes">
+                <attribute name="string">Mantenimiento</attribute>
+                <attribute name="readonly">foliado == True</attribute>e>
+            </xpath>
+           <xpath expr="//field[@name='service_type_id']" position="after">   
+                <field name="tipo_servicio"/>
+            </xpath>
+           <xpath expr="//field[@name='encargado']" position="after">   
+                <field name="type_service_id"/>
+            </xpath>
+            <xpath expr="//field[@name='notes']" position="attributes">
+                <attribute name="string">Observaciones</attribute>
+            </xpath>
+           <xpath expr="//field[@name='notes']" position="before">   
+                <field name="descripcion_trabajo"/>
+            </xpath>
+            <xpath expr="//field[@name='type_service_id']" position="after">
+                <field name="folio_rf" readonly="1" force_save="1" invisible="tipo == 'Correctivo'"/>
+            </xpath>
+            <xpath expr="//field[@name='odometer']" position="attributes">
+                <attribute name="string">Último odómetro</attribute>
+            </xpath>
+           <xpath expr="//field[@name='tipo_servicio']" position="after">   
+                <field name="tipo_solicitud" invisible="tipo != 'Adicional'"/>
+            </xpath>
+           <xpath expr="//field[@name='tipo_solicitud']" position="after">   
+                <field name="folio_relacionado_domain" invisible="1"/>
+            </xpath>
+           <xpath expr="//field[@name='tipo_solicitud']" position="after">   
+                <field name="folio_relacionado" invisible="tipo != 'Adicional'" domain = "folio_relacionado_domain"/>
+            </xpath>
+           <xpath expr="//field[@name='folio_relacionado']" position="after">   
+                <field name="date_init" invisible="tipo != 'Adicional'" widget="datetime"/>
+            </xpath>
+           <xpath expr="//field[@name='date_init']" position="after">   
+                <field name="date_end" invisible="tipo != 'Adicional'" widget="datetime"/>
+            </xpath>
+           <xpath expr="//field[@name='date_end']" position="after">   
+                <field name="delta" invisible="tipo != 'Adicional'" required="1"/>
+            </xpath>
         </field>
     </record>
 
@@ -25,15 +129,48 @@
         <field name="model">fleet.vehicle.log.services</field>
         <field name="inherit_id" ref="fleet.fleet_vehicle_log_services_view_tree"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='description']" position="before">   
+                <field name="folio" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='vehicle_id']" position="after">   
+                <field name="ubicacion"/>
+            </xpath>
+            <xpath expr="//field[@name='ubicacion']" position="after">   
+                <field name="hourmeter"/>
+            </xpath>
 
-            <xpath expr="//field[@name='service_type_id']" position="attributes">
+            <xpath expr="//field[@name='amount']" position="attributes">
                 <attribute name="invisible">True</attribute>
+                <attribute name="optional">hide</attribute>
             </xpath>
-
-            <xpath expr="//field[@name='description']" position="after">
-                <field name="type_service_id"/>
+            <xpath expr="//field[@name='vendor_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+                <attribute name="optional">hide</attribute>
             </xpath>
-
+            <xpath expr="//field[@name='hourmeter']" position="after">   
+                <field name="next_hourmeter"/>
+            </xpath>
+            <xpath expr="//field[@name='next_hourmeter']" position="after">   
+                <field name="mecanico"/>
+            </xpath>
+            <xpath expr="//field[@name='mecanico']" position="after">   
+                <field name="electrico"/>
+            </xpath>
+            <xpath expr="//field[@name='electrico']" position="after">   
+                <field name="ayudante"/>
+            </xpath>
+            <xpath expr="//field[@name='ayudante']" position="after">   
+                <field name="encargado"/>
+            </xpath>
+            <xpath expr="//field[@name='service_type_id']" position="attributes">
+                <attribute name="string">Mantenimiento</attribute>
+            </xpath>
+           <xpath expr="//field[@name='service_type_id']" position="after">   
+                <field name="tipo_servicio"/>
+            </xpath>
+            <xpath expr="//field[@name='notes']" position="attributes">
+                <attribute name="string">Observaciones</attribute>
+            </xpath>
         </field>
     </record>
 

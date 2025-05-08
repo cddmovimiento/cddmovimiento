@@ -9,16 +9,18 @@
     "license": "OPL-1",
 
     # any module necessary for this one to work correctly
-    "depends": ["base","fleet"],
+    "depends": ["base","fleet", "hr", 'gruascdd'],
 
     # always loaded
     "data": [
         "security/ir.model.access.csv",
         "data/data.xml",
+        "data/secuence.xml",
         "data/email_template.xml",       
         "views/fleet_vehicle.xml",
         "views/fleet_services_config_view.xml",
-        "views/fleet_vehicle_log_service_inh.xml"
+        "views/fleet_vehicle_log_service_inh.xml",
+        "views/fleet_service_type.xml"
     ],
     # only loaded in demonstration mode
     "demo": [

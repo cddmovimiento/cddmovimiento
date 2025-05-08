@@ -2,3 +2,7 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_fleet_services_config_user,gruascdd_fleet.fleet.services.config,model_fleet_services_config,base.group_user,1,1,1,1
 access_fleet_maintenance_notifications_user,gruascdd_fleet.fleet.maintenance.notifications,model_fleet_maintenance_notifications,base.group_user,1,1,1,1
 access_fleet_service_checklist_user,gruascdd_fleet.fleet.service.checklist,model_fleet_service_checklist,base.group_user,1,1,1,1
+access_services_binnacle_user,gruascdd_fleet.fleet.vehicle.binnacle.services,model_fleet_vehicle_binnacle_services,base.group_user,1,1,1,1
+access_services_verification_user,gruascdd_fleet.fleet.vehicle.verification.list,model_fleet_vehicle_verification_list,base.group_user,1,1,1,1
+access_failure_user,gruascdd_fleet.fleet.failure.config,model_fleet_failure_config,base.group_user,1,1,1,1
+access_failure_detail_user,gruascdd_fleet.fleet.vehicle.failure.list,model_fleet_vehicle_failure_list,base.group_user,1,1,1,1
