@@ -104,7 +104,7 @@ class SaleOrder(models.Model):
             for line in self.order_line:
                 total_hours += line.product_uom_qty
 
-            self.tasks_ids[0].planned_hours = total_hours
+            self.tasks_ids[0].allocated_hours = total_hours
         return result
 
     def action_report_domain_2(self):
