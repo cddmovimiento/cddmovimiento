@@ -22,6 +22,7 @@
         "views/fleet_vehicle_hourmeter.xml",
         "views/fleet_vehicle_gas.xml",
         "views/account_move.xml",
+        "views/portal_sale_order.xml"
     ],
     # only loaded in demonstration mode
     "demo": [
