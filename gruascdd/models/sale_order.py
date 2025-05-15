@@ -25,3 +25,6 @@ class SaleOrder(models.Model):
         task.write({'stage_id': 177})
 
         return invoice_vals
+
+    def _get_invoiceable_lines(self, final=False):
+        return super(SaleOrder, self)._get_invoiceable_lines(final).filtered(lambda l: not l.product_id.rent_ok)
