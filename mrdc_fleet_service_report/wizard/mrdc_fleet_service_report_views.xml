@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_mrdc_fleet_service_report_wizard" model="ir.ui.view">
+        <field name="name">mrdc.fleet_service.report.wizard.form</field>
+        <field name="model">mrdc.fleet_service.report</field>
+        <field name="arch" type="xml">
+            <form string="Imprimir Reporte de Venta">
+                <group>
+                    <group>
+                        <field name="start_date" required="1"/>
+                    </group>
+                    <group>
+                        <field name="end_date" required="1"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="print_xlsx_report"
+                            type="object"
+                            string="Imprimir Excel"
+                            class="btn-primary"
+                            icon="fa-print"/>
+                    <button string="Cancelar"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mrdc_fleet_service_report_wizard" model="ir.actions.act_window">
+        <field name="name">Imprimir Reporte Servicios</field>
+        <field name="res_model">mrdc.fleet_service.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_mrdc_fleet_service_report_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_mrdc_fleet_service_report_wizard" name="Reporte Servicios" parent="fleet.menu_fleet_reporting" action="action_mrdc_fleet_service_report_wizard"/>
+
+</odoo>
