@@ -123,6 +123,7 @@ class FleetVehicleLogServices(models.Model):
     date_end = fields.Datetime("Fecha hora final")
     delta = fields.Float("Delta")
     descripcion_trabajo = fields.Text(string='Descripcion trabajo', help='Descripción del trabajo')
+    folio_almacen = fields.Char(string='Folio Almacén')
 
     @api.model
     def create(self, vals):

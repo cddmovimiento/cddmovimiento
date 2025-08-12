@@ -121,6 +121,9 @@
            <xpath expr="//field[@name='date_end']" position="after">   
                 <field name="delta" invisible="tipo != 'Adicional'" required="1"/>
             </xpath>
+            <xpath expr="//field[@name='folio_rf']" position="after">
+                <field name="folio_almacen"/>
+            </xpath>
         </field>
     </record>
 
