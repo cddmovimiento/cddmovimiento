@@ -39,7 +39,6 @@
     },
 
     'external_dependencies': {
-        'python' : ['setuptools'],
     },
 
     'demo': [],
