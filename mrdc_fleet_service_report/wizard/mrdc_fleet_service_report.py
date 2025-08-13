@@ -71,7 +71,9 @@ class PrintFleetServiceReport(models.TransientModel):
         sheet.set_column('O:O', 35)
         sheet.set_column('P:P', 35)
         sheet.set_column('Q:Q', 35)
-        sheet.set_column('R:R', 2)
+        sheet.set_column('R:R', 35)
+        sheet.set_column('S:S', 35)
+        sheet.set_column('T:T', 2)
 
         table_header_format = workbook.add_format({'font_name': 'Arial', 'font_size': 14, 'font_color': 'black', 'align': 'center', 'right': 1, 'left': 1, 'top': 1, 'bottom': 1, 'bg_color': '#C0E6F5', 'bold': True, 'valign': 'vcenter', 'text_wrap': True})
         normal_bordered = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'align': 'center', 'right': 1, 'left': 1, 'top': 1, 'bottom': 1})
@@ -79,7 +81,7 @@ class PrintFleetServiceReport(models.TransientModel):
         date_bordered = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'align': 'left', 'right': 1, 'left': 1, 'top': 1, 'bottom': 1, 'num_format': 'dd/mm/yyyy'})
         datetime_bordered = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'align': 'left', 'right': 1, 'left': 1, 'top': 1, 'bottom': 1, 'num_format': 'dd/mm/yyyy hh:mm'})
 
-        headers = ['GRUA', 'NO. ECO', 'TIPO DE MANTTO', 'TIPO DE SERVICIO', 'FECHA PROG.', 'FECHA HORA INICIAL', 'FECHA HORA FINAL', 'HORAS', 'LOCACIÓN', 'HORÓMETRO', 'ODÓMETRO', 'HORAS DISPONIBLE', 'HORAS MAQUINA', 'RESPONSABLE', 'AYUDANTE', 'DESCRIPCIÓN DEL TRABAJO']
+        headers = ['GRUA', 'NO. ECO', 'TIPO DE MANTTO', 'TIPO DE SERVICIO', 'FECHA PROG.', 'FECHA HORA INICIAL', 'FECHA HORA FINAL', 'HORAS', 'LOCACIÓN', 'HORÓMETRO', 'ODÓMETRO', 'HORAS DISPONIBLE', 'HORAS MAQUINA', 'RESPONSABLE', 'AYUDANTE', 'OFICIAL MECÁNICO', 'OFICIAL ELÉCTRICO', 'DESCRIPCIÓN DEL TRABAJO']
 
         for col_num, header in enumerate(headers):
             sheet.write(1, col_num+1, header, table_header_format)
@@ -105,7 +107,9 @@ class PrintFleetServiceReport(models.TransientModel):
             sheet.write(row_num, 13, '', normal_bordered)
             sheet.write(row_num, 14, record.encargado.name or '', normal_bordered_wrap)
             sheet.write(row_num, 15, record.ayudante.name or '', normal_bordered_wrap)
-            sheet.write(row_num, 16, record.description or '', normal_bordered_wrap)
+            sheet.write(row_num, 16, record.mecanico.name or '', normal_bordered_wrap)
+            sheet.write(row_num, 17, record.electrico.name or '', normal_bordered_wrap)
+            sheet.write(row_num, 18, record.description or '', normal_bordered_wrap)
 
         sheet.hide_gridlines(2)
         workbook.close()
