@@ -33,3 +33,4 @@ class FleetServicesConfig(models.Model):
     value_to_alert = fields.Integer(string='Tiempo antes de Alerta')
     value_month_to_alert = fields.Integer(string='Tiempo en meses para alerta')
     value_horometer_alert = fields.Integer(string='Valor Horometro')
+    es_diagnostico = fields.Boolean(String="Es diagnóstico", default=False)
