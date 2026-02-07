@@ -17,7 +17,7 @@ class L10nMxEdiDocument(models.Model):
         if not is_refound_gi:
             return
         
-        for base_line_values in cfdi_values('conceptos_list', []):
+        for base_line_values in cfdi_values.get('conceptos_list', []):
                 line = base_line_values.get('line',{}).get('record')
                 base_line = base_lines_map.get(line)
                 
