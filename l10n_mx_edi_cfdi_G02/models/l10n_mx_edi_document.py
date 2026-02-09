@@ -26,4 +26,4 @@ class L10nMxEdiDocument(models.Model):
                 else:
                     description = base_line.get('name')
                 
-                base_line_values['description'] = description.get('name')
+                base_line_values['description'] = description
