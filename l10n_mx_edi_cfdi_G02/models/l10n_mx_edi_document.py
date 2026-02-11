@@ -22,7 +22,7 @@ class L10nMxEdiDocument(models.Model):
             if not line:
                 continue
 
-            user_description = (line.name or '').strip()
+            user_description = (line.move_id.ref or '').strip()
 
             if not user_description:
                 description = "Devoluciones, descuentos o bonificaciones"
