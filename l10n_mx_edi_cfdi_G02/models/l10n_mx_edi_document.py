@@ -10,20 +10,23 @@ class L10nMxEdiDocument(models.Model):
             base_lines,
             percentage_paid
         )
-        
-        is_refound_gi = cfdi_values['receptor']['uso_cfdi'] == 'G02'
-        base_lines_map = {line['record']: line for line in base_lines}
-        
-        if not is_refound_gi:
+
+        is_refund_gi = cfdi_values['receptor']['uso_cfdi'] == 'G02'
+
+        if not is_refund_gi:
             return
-        
+
         for base_line_values in cfdi_values.get('conceptos_list', []):
-                line = base_line_values.get('line',{}).get('record')
-                base_line = base_lines_map.get(line)
-                
-                if base_line.get('name') == "":
-                    description = "Devoluciones, descuentos o bonificaciones"
-                else:
-                    description = base_line.get('name')
-                
-                base_line_values['description'] = description
+            line = base_line_values.get('line',{}).get('record')
+
+            if not line:
+                continue
+
+            user_description = (line.name or '').strip()
+
+            if not user_description:
+                description = "Devoluciones, descuentos o bonificaciones"
+            else:
+                description = user_description
+
+            base_line_values['description'] = description
