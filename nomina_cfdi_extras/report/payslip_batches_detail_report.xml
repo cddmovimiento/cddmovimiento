@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
-		<report string="Listado de nomina" 
-			id="action_report_payslip_batches_detail"
-			model="hr.payslip.run" report_type="qweb-pdf"
-			name="nomina_cfdi_extras.report_payslip_batches_detail" 
-			file="nomina_cfdi_extras.report_payslip_batches_detail" 
-			paperformat="nomina_cfdi_extras.paperformat_landscape_Payslip_batch"/>
+		<record id="action_report_payslip_batches_detail" model="ir.actions.report">
+		    <field name="name">Listado de nomina</field>
+		    <field name="model">hr.payslip.run</field>
+		    <field name="report_type">qweb-pdf</field>
+		    <field name="report_name">nomina_cfdi_extras.report_payslip_batches_detail</field>
+		    <field name="report_file">nomina_cfdi_extras.report_payslip_batches_detail</field>
+		    <field name="paperformat_id" ref="nomina_cfdi_extras.paperformat_landscape_Payslip_batch"/>
+		    <field name="binding_model_id" ref="hr_payroll.model_hr_payslip_run"/>
+		    <field name="binding_type">report</field>
+		</record>
 	</data>
 	<template id="report_payslip_batches_detail">
 		  <t t-call= "web.html_container" >         

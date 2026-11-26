@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
-		<report string="ISR retenido y SUBEM" 
-			id="action_report_calculo_isr_anual"
-			model="calculo.isr.anual" report_type="qweb-pdf"
-			name="nomina_cfdi_extras.report_calculo_isr_anual" 
-			file="nomina_cfdi_extras.report_calculo_isr_anual" 
-		/>
+		<record id="action_report_calculo_isr_anual" model="ir.actions.report">
+		    <field name="name">ISR retenido y SUBEM</field>
+		    <field name="model">calculo.isr.anual</field>
+		    <field name="report_type">qweb-pdf</field>
+		    <field name="report_name">nomina_cfdi_extras.report_calculo_isr_anual</field>
+		    <field name="report_file">nomina_cfdi_extras.report_calculo_isr_anual</field>
+		    <field name="binding_model_id" ref="nomina_cfdi_extras.model_calculo_isr_anual"/>
+		    <field name="binding_type">report</field>
+		</record>
 	</data>
 	<template id="report_calculo_isr_anual">
 		<!--	<div class="header">

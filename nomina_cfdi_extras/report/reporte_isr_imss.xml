@@ -184,13 +184,16 @@
 		</template>
 
 
-		<report id="report_payslips_extras" 
-				model="hr.payslip" 
-				string="Reporte ISR IMSS" 
-				report_type="qweb-pdf" 
-				name="nomina_cfdi_extras.report_payslip_extras" 
-				file="nomina_cfdi_extras.report_payslip_extras"
-                paperformat="nomina_cfdi.paperformat_a4_landscape"/>
+		<record id="report_payslips_extras" model="ir.actions.report">
+		    <field name="name">Reporte ISR IMSS</field>
+		    <field name="model">hr.payslip</field>
+		    <field name="report_type">qweb-pdf</field>
+		    <field name="report_name">nomina_cfdi_extras.report_payslip_extras</field>
+		    <field name="report_file">nomina_cfdi_extras.report_payslip_extras</field>
+		    <field name="paperformat_id" ref="nomina_cfdi.paperformat_a4_landscape"/>
+		    <field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
+		    <field name="binding_type">report</field>
+		</record>
 
      </data>
 </odoo>

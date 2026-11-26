@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
-		<report string="Relacion de pagos" id="action_report_payslip_batches_pagos"
-			model="hr.payslip.run" report_type="qweb-pdf"
-			name="nomina_cfdi_extras.report_payslip_batches_pagos" file="nomina_cfdi_extras.report_payslip_batches_pagos" />
+		<record id="action_report_payslip_batches_pagos" model="ir.actions.report">
+		    <field name="name">Relacion de pagos</field>
+		    <field name="model">hr.payslip.run</field>
+		    <field name="report_type">qweb-pdf</field>
+		    <field name="report_name">nomina_cfdi_extras.report_payslip_batches_pagos</field>
+		    <field name="report_file">nomina_cfdi_extras.report_payslip_batches_pagos</field>
+		    <field name="binding_model_id" ref="hr_payroll.model_hr_payslip_run"/>
+		    <field name="binding_type">report</field>
+		</record>
 	</data>
 	<template id="report_payslip_batches_pagos">
 		<t t-foreach="docs" t-as="o">
