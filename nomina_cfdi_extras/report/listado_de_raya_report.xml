@@ -2,15 +2,15 @@
 <odoo>
 	<data>
 		
-		<report 
-			string="Listado de raya" 
-			id="action_report_listado_de_raya"
-			model="hr.payslip.run" 
-			report_type="qweb-pdf"
-			
-			name="nomina_cfdi_extras.report_listado_de_raya_detail" 
-			file="nomina_cfdi_extras.report_listado_de_raya_detail" 
-			/>
+		<record id="action_report_listado_de_raya" model="ir.actions.report">
+		    <field name="name">Listado de raya</field>
+		    <field name="model">hr.payslip.run</field>
+		    <field name="report_type">qweb-pdf</field>
+		    <field name="report_name">nomina_cfdi_extras.report_listado_de_raya_detail</field>
+		    <field name="report_file">nomina_cfdi_extras.report_listado_de_raya_detail</field>
+		    <field name="binding_model_id" ref="hr_payroll.model_hr_payslip_run"/>
+		    <field name="binding_type">report</field>
+		</record>
 	</data>
 	<template id="report_listado_de_raya_detail">
     <t t-call="web.html_container" >

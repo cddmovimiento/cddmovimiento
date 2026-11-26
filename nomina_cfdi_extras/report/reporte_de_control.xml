@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-	<report id="action_report_de_control_payslip_batch" 
-			model="hr.payslip.run" 
-			string="Reporte de Control" 
-			report_type="xlsx" 
-			name="nomina_cfdi_extras.report_de_control_payslip_batch" 
-			file="nomina_cfdi_extras.report_de_control_payslip_batch"
-	        attachment_use="False"/>
+	<record id="action_report_de_control_payslip_batch" model="ir.actions.report">
+	    <field name="name">Reporte de Control</field>
+	    <field name="model">hr.payslip.run</field>
+	    <field name="report_type">xlsx</field>
+	    <field name="report_name">nomina_cfdi_extras.report_de_control_payslip_batch</field>
+	    <field name="report_file">nomina_cfdi_extras.report_de_control_payslip_batch</field>
+	    <field name="attachment_use" eval="False"/>
+	    <field name="binding_model_id" ref="hr_payroll.model_hr_payslip_run"/>
+	    <field name="binding_type">report</field>
+	</record>
 	
-	<report id="action_report_imss_payslip_batch" 
-			model="hr.payslip.run" 
-			string="Reporte IMSS" 
-			report_type="xlsx" 
-			name="nomina_cfdi_extras.report_imss_payslip_batch" 
-			file="nomina_cfdi_extras.report_imss_payslip_batch"
-	        attachment_use="False"/>
+	<record id="action_report_imss_payslip_batch" model="ir.actions.report">
+	    <field name="name">Reporte IMSS</field>
+	    <field name="model">hr.payslip.run</field>
+	    <field name="report_type">xlsx</field>
+	    <field name="report_name">nomina_cfdi_extras.report_imss_payslip_batch</field>
+	    <field name="report_file">nomina_cfdi_extras.report_imss_payslip_batch</field>
+	    <field name="attachment_use" eval="False"/>
+	    <field name="binding_model_id" ref="hr_payroll.model_hr_payslip_run"/>
+	    <field name="binding_type">report</field>
+	</record>
 	        		
 </odoo>

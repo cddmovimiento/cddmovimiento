@@ -297,11 +297,16 @@
 				</t>
 		</template>
 
-		<report id="report_payslip_nomina_x3" model="hr.payslip.run"
-			string="Nomina x 3" report_type="qweb-pdf"
-			name="nomina_cfdi_extras.report_payslip_nomina_x3_ext"
-			file="nomina_cfdi_extras.report_payslip_nomina_x3_ext"
-			paperformat="nomina_cfdi_extras.paperformat_a4_portrait_nomina_x3" />
+		<record id="report_payslip_nomina_x3" model="ir.actions.report">
+		    <field name="name">Nomina x 3</field>
+		    <field name="model">hr.payslip.run</field>
+		    <field name="report_type">qweb-pdf</field>
+		    <field name="report_name">nomina_cfdi_extras.report_payslip_nomina_x3_ext</field>
+		    <field name="report_file">nomina_cfdi_extras.report_payslip_nomina_x3_ext</field>
+		    <field name="paperformat_id" ref="nomina_cfdi_extras.paperformat_a4_portrait_nomina_x3"/>
+		    <field name="binding_model_id" ref="hr_payroll.model_hr_payslip_run"/>
+		    <field name="binding_type">report</field>
+		</record>
 
 	</data>
 </odoo>
