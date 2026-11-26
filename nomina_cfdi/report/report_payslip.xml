@@ -33,13 +33,6 @@
             </t>
          </t>
       </template>
-      <report id="report_payslips" 
-         model="hr.payslip" 
-         string="Imprimir Nomina" 
-         report_type="qweb-pdf" 
-         name="nomina_cfdi.report_payslip" 
-         file="nomina_cfdi.report_payslips" 
-      />
       <template id="cfdi_payroll_layout">
          <!-- Multicompany -->
          <t t-if="not o and doc">
